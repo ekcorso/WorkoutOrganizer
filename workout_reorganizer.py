@@ -8,3 +8,11 @@
 # For each file, iterate over each sheet
 # Copy each sheet into a new spreadhseet by itself and save it in the appropriate directory
 
+"""
+Requirements:
+- Create an account in Google Cloud and enable Google Sheets API
+- Add a sevice account with the Editor role
+- Create a Google Sheets API key and save it in the ~/.config/gspread/ directory
+- Pip install the following: google-api-python-client, gspread
+# Confirm whether these are needed: google-auth-oauthlib, google-auth-oauthlib
+"""

@@ -25,6 +25,16 @@ import gspread
 
 # First pass, try referencing a sheet with a known ID. Once I have enabled the Google Drive API as well I'll be able to fetch a list of the spreadsheet IDs that are in a given folder and work with each of them
 
+
+client = gspread.service_account()
+sample_sheet_id = "1XmCCekBLcKKBMsc7pZ2egTmW7--6NmR9rf8jn96YzwY"
+
+spreadsheet = client.open_by_key(sample_sheet_id)
+sheets = spreadsheet.worksheets()  # Now we can ID sheets by their index
+new_spreadsheet_name = spreadsheet.title + " - " + sheets[0].title
+# client.create(new_spreadsheet_nam) # This will create a new spreadsheet with the name provided, but requires google drive API to be enabled
+
+
 def main() -> None:
     pass
 

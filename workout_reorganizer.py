@@ -38,29 +38,24 @@ def iterate_over_all_spreadsheets_in_folder(folder_id: str) -> None:
     """Iterate over all the spreadsheets in the given folder and call the function to copy each sheet to a new spreadsheet"""
     folder = [str]  # replace this with the actual Google Drive folder object
     for spreadsheet in folder:
-        separate_and_copy_all_sheets_to_folder(spreadsheet.id)
+        separate_and_copy_all_sheets_to_folder(spreadsheet)
 
 
-def separate_and_copy_all_sheets_to_folder(spreadsheet_id: str) -> None:
+def separate_and_copy_all_sheets_to_folder(spreadsheet: gspread.spreadsheet.Spreadsheet) -> None:
     """Copy all the sheets for spreadsheet and make each it's own spreasheet"""
     client = gspread.service_account()
     destination_folder_id = ""  # replace this with the ID of the folder where the new spreadsheets should be saved
-    spreadsheet = client.open_by_key(spreadsheet_id)
     sheets = spreadsheet.worksheets()
     for sheet in sheets:
-        title = get_dest_spreadsheet_title(spreadsheet_id)
+        title = get_dest_spreadsheet_title(spreadsheet, sheet)
         dest_spreadsheet_id = create_new_spreadsheet_with_title(title)
         sheet.copy_to(dest_spreadsheet_id)
 
 
-def get_dest_spreadsheet_title(spreadsheet_id: str) -> str:
+def get_dest_spreadsheet_title(spreadsheet: gspread.spreadsheet.Spreadsheet, worksheet: gspread.worksheet.Worksheet) -> str:
     """Create and return a title for the new spreadsheet based on 1) the name of the original spreadsheet and 2) the name of the sheet within that spreadsheet that is being copied"""
     client = gspread.service_account()
-    # replace this with the spreadsheet_id passed in above
-    sample_sheet_id = "1XmCCekBLcKKBMsc7pZ2egTmW7--6NmR9rf8jn96YzwY"
-    spreadsheet = client.open_by_key(sample_sheet_id)
-    sheets = spreadsheet.worksheets()
-    new_spreadsheet_name = spreadsheet.title + " - " + sheets[0].title
+    new_spreadsheet_name = spreadsheet.title + " - " + worksheet.title
     return new_spreadsheet_name
 
 

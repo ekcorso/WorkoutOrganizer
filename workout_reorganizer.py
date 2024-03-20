@@ -34,6 +34,11 @@ def create_new_spreadsheet_with_title(title: str) -> str:
     return sheet.id
 
 
+def iterate_over_all_spreadsheets_in_folder(folder_id: str) -> None:
+    """Iterate over all the spreadsheets in the given folder and call the function to copy each sheet to a new spreadsheet"""
+    folder = [str]  # replace this with the actual Google Drive folder object
+    for spreadsheet in folder:
+        seperate_and_copy_all_sheets_to_folder(spreadsheet.id)
 
 
 def seperate_and_copy_all_sheets_to_folder(spreadsheet_id: str) -> None:

@@ -10,7 +10,7 @@
 
 """
 Requirements:
-- Create an account in Google Cloud and enable Google Sheets API
+- Create an account in Google Cloud and enable Google Sheets API and Google Drive API
 - Add a sevice account with the Editor role
 - Create a Google Sheets API key and save it in the ~/.config/gspread/ directory
 - Pip install the following: google-api-python-client, gspread
@@ -25,6 +25,13 @@ import gspread
 
 # First pass, try referencing a sheet with a known ID. Once I have enabled the Google Drive API as well I'll be able to fetch a list of the spreadsheet IDs that are in a given folder and work with each of them
 
+
+def create_new_spreadsheet_with_title(title: str) -> str:
+    """Create a new spreadsheet with the given title and return the ID of the new spreadsheet"""
+    client = gspread.service_account()
+    sheet = client.create(title)
+    sheet.share("ekcorso@gmail.com", perm_type="user", role="writer")
+    return sheet.id
 
 
 

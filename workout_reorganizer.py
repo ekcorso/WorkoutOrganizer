@@ -36,6 +36,18 @@ def create_new_spreadsheet_with_title(title: str) -> str:
 
 
 
+def seperate_and_copy_all_sheets_to_folder(spreadsheet_id: str) -> None:
+    """Copy all the sheets for spreadsheet and make each it's own spreashee"""t
+    client = gspread.service_account()
+    destination_folder_id = ""  # replace this with the ID of the folder where the new spreadsheets should be saved
+    spreadsheet = client.open_by_key(spreadsheet_id)
+    sheets = spreadsheet.worksheets()
+    for sheet in sheets:
+        title = get_dest_spreadsheet_title(spreadsheet_id)
+        dest_spreadsheet_id = create_new_spreadsheet_with_title(title)
+        sheet.id.copy_to(dest_spreadsheet_id)
+
+
 def get_dest_spreadsheet_title(spreadsheet_id: str) -> str:
     """Create and return a title for the new spreadsheet based on 1) the name of the original spreadsheet and 2) the name of the sheet within that spreadsheet that is being copied"""
     client = gspread.service_account()

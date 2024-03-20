@@ -26,13 +26,18 @@ import gspread
 # First pass, try referencing a sheet with a known ID. Once I have enabled the Google Drive API as well I'll be able to fetch a list of the spreadsheet IDs that are in a given folder and work with each of them
 
 
-client = gspread.service_account()
-sample_sheet_id = "1XmCCekBLcKKBMsc7pZ2egTmW7--6NmR9rf8jn96YzwY"
 
-spreadsheet = client.open_by_key(sample_sheet_id)
-sheets = spreadsheet.worksheets()  # Now we can ID sheets by their index
-new_spreadsheet_name = spreadsheet.title + " - " + sheets[0].title
-# client.create(new_spreadsheet_nam) # This will create a new spreadsheet with the name provided, but requires google drive API to be enabled
+
+
+def get_dest_spreadsheet_title(spreadsheet_id: str) -> str:
+    """Create and return a title for the new spreadsheet based on 1) the name of the original spreadsheet and 2) the name of the sheet within that spreadsheet that is being copied"""
+    client = gspread.service_account()
+    # replace this with the spreadsheet_id passed in above
+    sample_sheet_id = "1XmCCekBLcKKBMsc7pZ2egTmW7--6NmR9rf8jn96YzwY"
+    spreadsheet = client.open_by_key(sample_sheet_id)
+    sheets = spreadsheet.worksheets()
+    new_spreadsheet_name = spreadsheet.title + " - " + sheets[0].title
+    return new_spreadsheet_name
 
 
 def main() -> None:

@@ -31,7 +31,8 @@ from gspread.worksheet import Worksheet
 def create_new_spreadsheet_with_title(title: str) -> Spreadsheet:
     """Create a new spreadsheet with the given title and return the ID of the new spreadsheet"""
     client = gspread.service_account()
-    sheet = client.create(title)
+    destination_folder_id = "1xGxdgsdYycslU6w1R0m0yCVLUw3Gfedm" # Let's pass this in as an argument
+    sheet = client.create(title, folder_id=destination_folder_id)
     sheet.share("ekcorso@gmail.com", perm_type="user", role="writer")
     return sheet
 
@@ -46,17 +47,15 @@ def iterate_over_all_spreadsheets_in_folder(folder_id: str) -> None:
 def separate_and_copy_all_sheets_to_folder(spreadsheet: Spreadsheet) -> None:
     """Copy all the sheets for spreadsheet and make each it's own spreasheet"""
     client = gspread.service_account()
-    destination_folder_id = ""  # replace this with the ID of the folder where the new spreadsheets should be saved
     sheets = spreadsheet.worksheets()
     for sheet in sheets:
         title = get_dest_spreadsheet_title(spreadsheet, sheet)
-        dest_spreadsheet_id = create_new_spreadsheet_with_title(title)
-        sheet.copy_to(dest_spreadsheet_id)
+        dest_spreadsheet = create_new_spreadsheet_with_title(title)
+        sheet.copy_to(dest_spreadsheet.id)
 
 
 def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet) -> str:
     """Create and return a title for the new spreadsheet based on 1) the name of the original spreadsheet and 2) the name of the sheet within that spreadsheet that is being copied"""
-    client = gspread.service_account()
     new_spreadsheet_name = spreadsheet.title + " - " + worksheet.title
     return new_spreadsheet_name
 

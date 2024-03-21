@@ -28,12 +28,12 @@ from gspread.worksheet import Worksheet
 # First pass, try referencing a sheet with a known ID. Once I have enabled the Google Drive API as well I'll be able to fetch a list of the spreadsheet IDs that are in a given folder and work with each of them
 
 
-def create_new_spreadsheet_with_title(title: str) -> str:
+def create_new_spreadsheet_with_title(title: str) -> Spreadsheet:
     """Create a new spreadsheet with the given title and return the ID of the new spreadsheet"""
     client = gspread.service_account()
     sheet = client.create(title)
     sheet.share("ekcorso@gmail.com", perm_type="user", role="writer")
-    return sheet.id
+    return sheet
 
 
 def iterate_over_all_spreadsheets_in_folder(folder_id: str) -> None:

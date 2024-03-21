@@ -14,7 +14,6 @@ Requirements:
 - Add a sevice account with the Editor role
 - Create a Google Sheets API key and save it in the ~/.config/gspread/ directory
 - Pip install the following: google-api-python-client, gspread
-# Confirm whether these are needed: google-auth-oauthlib, google-auth-oauthlib
 """
 
 
@@ -22,6 +21,9 @@ import os
 import requests
 import gspread
 
+from gspread import Client
+from gspread.spreadsheet import Spreadsheet
+from gspread.worksheet import Worksheet
 
 # First pass, try referencing a sheet with a known ID. Once I have enabled the Google Drive API as well I'll be able to fetch a list of the spreadsheet IDs that are in a given folder and work with each of them
 
@@ -41,7 +43,7 @@ def iterate_over_all_spreadsheets_in_folder(folder_id: str) -> None:
         separate_and_copy_all_sheets_to_folder(spreadsheet)
 
 
-def separate_and_copy_all_sheets_to_folder(spreadsheet: gspread.spreadsheet.Spreadsheet) -> None:
+def separate_and_copy_all_sheets_to_folder(spreadsheet: Spreadsheet) -> None:
     """Copy all the sheets for spreadsheet and make each it's own spreasheet"""
     client = gspread.service_account()
     destination_folder_id = ""  # replace this with the ID of the folder where the new spreadsheets should be saved
@@ -52,7 +54,7 @@ def separate_and_copy_all_sheets_to_folder(spreadsheet: gspread.spreadsheet.Spre
         sheet.copy_to(dest_spreadsheet_id)
 
 
-def get_dest_spreadsheet_title(spreadsheet: gspread.spreadsheet.Spreadsheet, worksheet: gspread.worksheet.Worksheet) -> str:
+def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet) -> str:
     """Create and return a title for the new spreadsheet based on 1) the name of the original spreadsheet and 2) the name of the sheet within that spreadsheet that is being copied"""
     client = gspread.service_account()
     new_spreadsheet_name = spreadsheet.title + " - " + worksheet.title

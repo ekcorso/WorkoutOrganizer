@@ -29,7 +29,7 @@ def create_new_spreadsheet(
 ) -> Spreadsheet:
     """Create a new spreadsheet in the destination folder with the given title and return the new spreadsheet"""
     sheet = client.create(title, folder_id=dest_folder_id)
-    sheet.share("ekcorso@gmail.com", perm_type="user", role="writer")
+    sheet.share("ekcorso@gmail.com", perm_type="user", role="writer", notify=False)
     return sheet
 
 

@@ -25,7 +25,12 @@ from gspread import Client
 from gspread.spreadsheet import Spreadsheet
 from gspread.worksheet import Worksheet
 
-# First pass, try referencing a sheet with a known ID. Once I have enabled the Google Drive API as well I'll be able to fetch a list of the spreadsheet IDs that are in a given folder and work with each of them
+
+def fetch_list_of_files_in_folder(folder_id: str) -> [Spreadsheet]:
+    """Fetch a list of files in the given folder and return a list of Spreadsheet objects"""
+    client = gspread.service_account()
+    spreadsheets_in_folder = client.list_spreadsheet_files(title=None, folder_id=folder_id)
+    return spreadsheets_in_folder
 
 
 def create_new_spreadsheet_with_title(title: str) -> Spreadsheet:

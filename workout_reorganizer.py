@@ -25,11 +25,10 @@ def fetch_list_of_files_in_folder(folder_id: str) -> [Spreadsheet]:
     return spreadsheets_in_folder
 
 
-def create_new_spreadsheet_with_title(title: str) -> Spreadsheet:
+def create_new_spreadsheet(title: str, dest_folder_id: str) -> Spreadsheet:
     """Create a new spreadsheet in the destination folder with the given title and return the new spreadsheet"""
     client = gspread.service_account()
-    destination_folder_id = "1xGxdgsdYycslU6w1R0m0yCVLUw3Gfedm" # Let's pass this in as an argument
-    sheet = client.create(title, folder_id=destination_folder_id)
+    sheet = client.create(title, folder_id=dest_folder_id)
     sheet.share("ekcorso@gmail.com", perm_type="user", role="writer")
     return sheet
 
@@ -41,14 +40,12 @@ def iterate_over_all_spreadsheets_in_folder(folder_id: str) -> None:
         separate_and_copy_all_sheets_to_folder(spreadsheet)
 
 
-def separate_and_copy_all_sheets_to_folder(spreadsheet: Spreadsheet) -> None:
-    """Copy all the sheets for spreadsheet and make each it's own spreasheet"""
-    client = gspread.service_account()
+def separate_and_copy_all_sheets_to_folder(spreadsheet: Spreadsheet, destination_folder_id: str) -> None:
     """Copy all the sheets for spreadsheet and make each into a new spreadsheet"""
     sheets = spreadsheet.worksheets()
     for sheet in sheets:
         title = get_dest_spreadsheet_title(spreadsheet, sheet)
-        dest_spreadsheet = create_new_spreadsheet_with_title(title)
+        dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id)
         sheet.copy_to(dest_spreadsheet.id)
 
 
@@ -59,7 +56,9 @@ def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet) -
 
 
 def main() -> None:
-    pass
+    source_folder_id = str(input("Please enter the source folder ID: "))
+    print("Hint: this ID will be in the URL of the folder in Google Drive.")
+    destination_folder_id = str(input("Please enter the destination folder ID: "))
 
 
 if __name__ == "__main__":

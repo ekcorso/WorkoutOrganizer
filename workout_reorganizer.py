@@ -1,17 +1,9 @@
-## Workout Reorganizer Script
-## Takes a set of workouts in a google sheets folder and iterate over them to extract each workout into a separate spreadsheet.
+"""Takes a set of workouts in a google sheets folder and iterates over them to extract each workout into a separate spreadsheet.
 
-# Steps:
-# Enable the Google Sheets API
-# Fetch a list of files in the google sheets directory
-# Iterate over all files in the google sheets directory
-# For each file, iterate over each sheet
-# Copy each sheet into a new spreadhseet by itself and save it in the appropriate directory
-
-"""
 Requirements:
 - Create an account in Google Cloud and enable Google Sheets API and Google Drive API
 - Add a sevice account with the Editor role
+- Share the source and destination folders with the service account email address and give it editor permission
 - Create a Google Sheets API key and save it in the ~/.config/gspread/ directory
 - Pip install the following: google-api-python-client, gspread
 """
@@ -34,7 +26,7 @@ def fetch_list_of_files_in_folder(folder_id: str) -> [Spreadsheet]:
 
 
 def create_new_spreadsheet_with_title(title: str) -> Spreadsheet:
-    """Create a new spreadsheet with the given title and return the ID of the new spreadsheet"""
+    """Create a new spreadsheet in the destination folder with the given title and return the new spreadsheet"""
     client = gspread.service_account()
     destination_folder_id = "1xGxdgsdYycslU6w1R0m0yCVLUw3Gfedm" # Let's pass this in as an argument
     sheet = client.create(title, folder_id=destination_folder_id)
@@ -52,6 +44,7 @@ def iterate_over_all_spreadsheets_in_folder(folder_id: str) -> None:
 def separate_and_copy_all_sheets_to_folder(spreadsheet: Spreadsheet) -> None:
     """Copy all the sheets for spreadsheet and make each it's own spreasheet"""
     client = gspread.service_account()
+    """Copy all the sheets for spreadsheet and make each into a new spreadsheet"""
     sheets = spreadsheet.worksheets()
     for sheet in sheets:
         title = get_dest_spreadsheet_title(spreadsheet, sheet)
@@ -60,7 +53,7 @@ def separate_and_copy_all_sheets_to_folder(spreadsheet: Spreadsheet) -> None:
 
 
 def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet) -> str:
-    """Create and return a title for the new spreadsheet based on 1) the name of the original spreadsheet and 2) the name of the sheet within that spreadsheet that is being copied"""
+    """Create and return a title for the new spreadsheet"""
     new_spreadsheet_name = spreadsheet.title + " - " + worksheet.title
     return new_spreadsheet_name
 

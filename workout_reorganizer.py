@@ -8,14 +8,12 @@ Requirements:
 - Pip install the following: google-api-python-client, gspread
 """
 
-
-import os
-import requests
 import gspread
 
 from gspread import Client
 from gspread.spreadsheet import Spreadsheet
 from gspread.worksheet import Worksheet
+
 
 
 def fetch_list_of_files_in_folder(folder_id: str, client: Client) -> [Spreadsheet]:
@@ -53,13 +51,14 @@ def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet) -
 
 
 def main() -> None:
+    print("Hint: folder IDs are in the URL of the folder in Google Drive.")
     source_folder_id = str(input("Please enter the source folder ID: "))
-    print("Hint: this ID will be in the URL of the folder in Google Drive.")
     destination_folder_id = str(input("Please enter the destination folder ID: "))
     client = gspread.service_account()
 
     spreadsheets_to_copy = fetch_list_of_files_in_folder(source_folder_id, client)
 
+    print("Copying sheets now...")
     for spreadsheet in spreadsheets_to_copy:
         spreadsheet = client.open_by_key(spreadsheet["id"])
         separate_and_copy_all_sheets_to_folder(

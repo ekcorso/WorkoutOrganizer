@@ -14,6 +14,7 @@ from gspread import Client
 from gspread.spreadsheet import Spreadsheet
 from gspread.worksheet import Worksheet
 
+from rich.progress import track
 
 
 def fetch_list_of_files_in_folder(folder_id: str, client: Client) -> [Spreadsheet]:
@@ -58,8 +59,7 @@ def main() -> None:
 
     spreadsheets_to_copy = fetch_list_of_files_in_folder(source_folder_id, client)
 
-    print("Copying sheets now...")
-    for spreadsheet in spreadsheets_to_copy:
+    for spreadsheet in track(spreadsheets_to_copy, "Copying..."):
         spreadsheet = client.open_by_key(spreadsheet["id"])
         separate_and_copy_all_sheets_to_folder(
             spreadsheet, destination_folder_id, client

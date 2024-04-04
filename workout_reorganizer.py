@@ -43,12 +43,19 @@ def separate_and_copy_all_sheets_to_folder(
         title = get_dest_spreadsheet_title(spreadsheet, sheet)
         dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
         sheet.copy_to(dest_spreadsheet.id)
+        remove_sheet1_from_spreadsheet(dest_spreadsheet)
 
 
 def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet) -> str:
     """Create and return a title for the new spreadsheet"""
     new_spreadsheet_name = spreadsheet.title + " - " + worksheet.title
     return new_spreadsheet_name
+
+
+def remove_sheet1_from_spreadsheet(spreadsheet: Spreadsheet) -> None:
+    """Remove the default 'Sheet1' from the spreadsheet"""
+    sheet1 = spreadsheet.worksheet("Sheet1")
+    spreadsheet.del_worksheet(sheet1)
 
 
 def main() -> None:

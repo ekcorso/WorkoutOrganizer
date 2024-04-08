@@ -58,6 +58,25 @@ def remove_sheet1_from_spreadsheet(spreadsheet: Spreadsheet) -> None:
     spreadsheet.del_worksheet(sheet1)
 
 
+def get_client_name_list_from_spreadsheets(spreadsheets: [Spreadsheet]) -> [str]:
+    """Return a list of titles for the given list of spreadsheets"""
+    return [[sheet["name"]] for sheet in spreadsheets]
+
+
+def create_workout_translation_spreadsheet(
+    origin_folder_id: str, dest_folder_id: str, client: Client
+) -> Spreadsheet:
+    """Create a new spreadsheet in the destination folder with the title 'Workout Translation' and return the new spreadsheet
+    with a list of all the client names in the origin folder."""
+    spreadsheet = create_new_spreadsheet("Workout Translations", dest_folder_id, client)
+    current_client_files = fetch_list_of_files_in_folder(origin_folder_id, client)
+    names = get_client_name_list_from_spreadsheets(current_client_files)
+    sheet = spreadsheet.get_worksheet(0)
+    sheet.append_row(["Original Name", "Description"])
+    sheet.append_rows(names)
+    return sheet
+
+
 def main() -> None:
     print("Hint: folder IDs are in the URL of the folder in Google Drive.")
     source_folder_id = str(input("Please enter the source folder ID: "))
@@ -65,6 +84,13 @@ def main() -> None:
     client = gspread.service_account()
 
     spreadsheets_to_copy = fetch_list_of_files_in_folder(source_folder_id, client)
+
+    needs_client_list = input("Do you want to create the client list? (y/n) ")
+    if needs_client_list.lower() == "y":
+        create_workout_translation_spreadsheet(
+            source_folder_id, destination_folder_id, client
+        )
+
 
     for spreadsheet in track(spreadsheets_to_copy, "Copying..."):
         spreadsheet = client.open_by_key(spreadsheet["id"])

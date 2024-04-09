@@ -57,7 +57,9 @@ def is_valid_workout(worksheet: Worksheet) -> bool:
 
 def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet) -> str:
     """Create and return a title for the new spreadsheet"""
-    new_spreadsheet_name = spreadsheet.title + " - " + worksheet.title
+    tab_name = get_workout_description_for_worksheet(worksheet)
+    # TODO: replace spreadsheet.title with the translated nme
+    new_spreadsheet_name = spreadsheet.title + " - " + tab_name
     return new_spreadsheet_name
 
 
@@ -84,6 +86,15 @@ def create_workout_translation_spreadsheet(
     sheet.append_row(["Original Name", "Description"])
     sheet.append_rows(names)
     return sheet
+
+
+def get_workout_description_for_worksheet(worksheet: Worksheet) -> str:
+    """Return the description of the workout from the spreadsheet"""
+    newer_description = worksheet.acell("B2").value
+    older_description = worksheet.acell("B4").value
+    canary_cell = worksheet.acell("A1").value
+    ret = older_description if not canary_cell else newer_description
+    return ret
 
 
 def main() -> None:

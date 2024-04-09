@@ -22,7 +22,8 @@ def fetch_list_of_files_in_folder(folder_id: str, client: Client) -> [Spreadshee
     spreadsheets_in_folder = client.list_spreadsheet_files(
         title=None, folder_id=folder_id
     )
-    return spreadsheets_in_folder
+    valid_spreadsheets = list(filter(lambda n: "Workout Translations" not in n["name"], spreadsheets_in_folder))
+    return valid_spreadsheets
 
 
 def create_new_spreadsheet(

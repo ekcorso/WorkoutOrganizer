@@ -42,7 +42,7 @@ def separate_and_copy_all_sheets_to_folder(
     sheets = spreadsheet.worksheets()
     for sheet in sheets:
         if is_valid_workout(sheet):
-            title = get_dest_spreadsheet_title(spreadsheet, sheet)
+            title = get_dest_spreadsheet_title(spreadsheet, sheet, client)
             dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
             sheet.copy_to(dest_spreadsheet.id)
             remove_sheet1_from_spreadsheet(dest_spreadsheet)
@@ -56,12 +56,22 @@ def is_valid_workout(worksheet: Worksheet) -> bool:
     return is_valid
 
 
-def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet) -> str:
+def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet, client: Client) -> str:
     """Create and return a title for the new spreadsheet"""
     tab_name = get_workout_description_for_worksheet(worksheet)
-    # TODO: replace spreadsheet.title with the translated nme
-    new_spreadsheet_name = spreadsheet.title + " - " + tab_name
+    source_title = spreadsheet.title
+    translated_source_title = translate_workout_name(source_title, client)
+    new_spreadsheet_name = translated_source_title + " - " + tab_name
     return new_spreadsheet_name
+
+
+def translate_workout_name(source_title: str, client: Client) -> str:
+    """Translate the workout title from the source title to a supplied description"""
+    # TODO: Replace the hardcoded test name with the actual name of the translation spreadsheet
+    translation_sheet = client.open("Workout Translations - TEST").sheet1
+    translation_row = translation_sheet.find(source_title).row
+    translated_name = translation_sheet.cell(translation_row, 2).value
+    return str(translated_name) if translated_name else str(source_title)
 
 
 def remove_sheet1_from_spreadsheet(spreadsheet: Spreadsheet) -> None:

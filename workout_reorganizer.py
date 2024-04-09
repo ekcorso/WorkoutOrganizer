@@ -40,10 +40,19 @@ def separate_and_copy_all_sheets_to_folder(
     """Copy all the sheets for spreadsheet and make each into a new spreadsheet"""
     sheets = spreadsheet.worksheets()
     for sheet in sheets:
-        title = get_dest_spreadsheet_title(spreadsheet, sheet)
-        dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
-        sheet.copy_to(dest_spreadsheet.id)
-        remove_sheet1_from_spreadsheet(dest_spreadsheet)
+        if is_valid_workout(sheet):
+            title = get_dest_spreadsheet_title(spreadsheet, sheet)
+            dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
+            sheet.copy_to(dest_spreadsheet.id)
+            remove_sheet1_from_spreadsheet(dest_spreadsheet)
+
+
+def is_valid_workout(worksheet: Worksheet) -> bool:
+    """Check that the worksheet is not a blank workout template"""
+    canary_cell_value = worksheet.acell("A1").value
+    completely_blank = not any(worksheet.get_all_values())
+    is_valid = False if (canary_cell_value == "Name: " or completely_blank) else True 
+    return is_valid
 
 
 def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet) -> str:

@@ -2,7 +2,7 @@
 
 Requirements:
 - Create an account in Google Cloud and enable Google Sheets API and Google Drive API
-- Add a sevice account with the Editor role
+- Add a service account with the Editor role
 - Share the source and destination folders with the service account email address and give it editor permission
 - Create a Google Sheets API key and save it in the ~/.config/gspread/ directory
 - Pip install the following: google-api-python-client, gspread
@@ -103,7 +103,7 @@ def get_workout_description_for_worksheet(worksheet: Worksheet) -> str:
     """Return the description of the workout from the spreadsheet"""
     newer_description = worksheet.acell("B2").value
     older_description = worksheet.acell("B4").value
-    canary_cell = worksheet.acell("A1").value
+    canary_cell = worksheet.acell("A1").value # This cell will be blank if the workout is an older format
     ret = older_description if not canary_cell else newer_description
     return ret
 

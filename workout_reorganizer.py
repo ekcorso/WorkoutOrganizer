@@ -48,6 +48,18 @@ def separate_and_copy_all_sheets_to_folder(
             remove_sheet1_from_spreadsheet(dest_spreadsheet)
 
 
+def should_process_spreadsheeet(spreadsheet: Spreadsheet, client: Client) -> bool:
+    """Check if translation sheet indicates that the workout should be skipped"""
+    # TODO: Replace the hardcoded test name with the actual name of the translation spreadsheet
+    translation_sheet = client.open("Workout Translations - TEST").sheet1
+    translation_row = translation_sheet.find(spreadsheet.title).row
+    skip_cell = translation_sheet.cell(translation_row, 3).value
+    if skip_cell:
+        if skip_cell.lower() == "y":
+            return False
+    return True
+
+
 def is_valid_workout(worksheet: Worksheet) -> bool:
     """Check that the worksheet is not a blank workout template"""
     canary_cell_value = worksheet.acell("A1").value
@@ -125,9 +137,10 @@ def main() -> None:
 
     for spreadsheet in track(spreadsheets_to_copy, "Copying..."):
         spreadsheet = client.open_by_key(spreadsheet["id"])
-        separate_and_copy_all_sheets_to_folder(
-            spreadsheet, destination_folder_id, client
-        )
+        if should_process_spreadsheeet(spreadsheet, client):
+            separate_and_copy_all_sheets_to_folder(
+                spreadsheet, destination_folder_id, client
+            )
 
 
 if __name__ == "__main__":

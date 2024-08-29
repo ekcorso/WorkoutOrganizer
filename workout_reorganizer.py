@@ -73,7 +73,7 @@ def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet, c
     tab_name = get_workout_description_for_worksheet(worksheet)
     source_title = spreadsheet.title
     translated_source_title = translate_workout_name(source_title, client)
-    new_spreadsheet_name = translated_source_title + " - " + tab_name
+    new_spreadsheet_name = tab_name + " - " +translated_source_title
     return new_spreadsheet_name
 
 

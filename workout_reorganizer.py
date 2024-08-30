@@ -94,7 +94,7 @@ def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet, t
 
 def translate_workout_name(source_title: str, translated_data: [SpreadsheetRow]) -> str:
     """Translate the workout title from the source title to a supplied description"""
-    translated_name = next(item.description for item in translated_data if item.original_name == source_title, None)
+    translated_name = next((item.description for item in translated_data if item.original_name == source_title), None)
     return str(translated_name) if translated_name else str(source_title)
 
 

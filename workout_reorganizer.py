@@ -17,6 +17,26 @@ from gspread.worksheet import Worksheet
 from rich.progress import track
 
 
+class TranslationRow:
+    original_name: str
+    description: str
+    skip: bool
+
+    def __init__(self, original_name: str, description: str, skip: bool) -> None:
+        self.original_name = original_name
+        self.description = description
+        self.skip = self.should_skip(skip)
+
+    def __repr__(self) -> str:
+        return f"TranslationRow({self.original_name}, {self.description}, {self.skip})"
+
+    def should_skip(self, skip: str) -> bool:
+        if skip:
+            if skip.lower() == "y":
+                return True
+        return False
+
+
 def fetch_list_of_files_in_folder(folder_id: str, client: Client) -> [Spreadsheet]:
     """Fetch a list of files in the given folder and return a list of Spreadsheet objects"""
     spreadsheets_in_folder = client.list_spreadsheet_files(

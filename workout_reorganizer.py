@@ -17,7 +17,7 @@ from gspread.worksheet import Worksheet
 from rich.progress import track
 
 
-class TranslationRow:
+class SpreadsheetRow:
     original_name: str
     description: str
     skip: bool
@@ -28,7 +28,7 @@ class TranslationRow:
         self.skip = self.should_skip(skip)
 
     def __repr__(self) -> str:
-        return f"TranslationRow({self.original_name}, {self.description}, {self.skip})"
+        return f"SpreadsheetRow({self.original_name}, {self.description}, {self.skip})"
 
     def should_skip(self, skip: str) -> bool:
         if skip:
@@ -56,7 +56,7 @@ def create_new_spreadsheet(
 
 
 def separate_and_copy_all_sheets_to_folder(
-    spreadsheet: Spreadsheet, destination_folder_id: str, client: Client, translated_data: [TranslationRow]
+    spreadsheet: Spreadsheet, destination_folder_id: str, client: Client, translated_data: [SpreadsheetRow]
 ) -> None:
     """Copy all the sheets for spreadsheet and make each into a new spreadsheet"""
     sheets = spreadsheet.worksheets()
@@ -68,7 +68,7 @@ def separate_and_copy_all_sheets_to_folder(
             remove_sheet1_from_spreadsheet(dest_spreadsheet)
 
 
-def should_process_spreadsheeet(spreadsheet: Spreadsheet, translations: [TranslationRow]) -> bool:
+def should_process_spreadsheeet(spreadsheet: Spreadsheet, translations: [SpreadsheetRow]) -> bool:
     """Check if translation sheet indicates that the workout should be skipped"""
     for translation in translations:
         if translation.original_name == spreadsheet.title:
@@ -83,7 +83,7 @@ def is_valid_workout(worksheet: Worksheet) -> bool:
     return is_valid
 
 
-def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet, translated_data: [TranslationRow]) -> str:
+def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet, translated_data: [SpreadsheetRow]) -> str:
     """Create and return a title for the new spreadsheet"""
     tab_name = get_workout_description_for_worksheet(worksheet)
     source_title = spreadsheet.title
@@ -92,7 +92,7 @@ def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet, t
     return new_spreadsheet_name
 
 
-def translate_workout_name(source_title: str, translated_data: [TranslationRow]) -> str:
+def translate_workout_name(source_title: str, translated_data: [SpreadsheetRow]) -> str:
     """Translate the workout title from the source title to a supplied description"""
     translated_name = next(item.description for item in translated_data if item.original_name == source_title, None)
     return str(translated_name) if translated_name else str(source_title)
@@ -141,7 +141,7 @@ def main() -> None:
     spreadsheets_to_copy = fetch_list_of_files_in_folder(source_folder_id, client)
     
     translation_sheet = client.open("Workout Translations - TEST").sheet1
-    translation_data = [TranslationRow(row["Original Name"], row["Description"], row["Skip?"]) for row in translation_sheet.get_all_records()]
+    translation_data = [SpreadsheetRow(row["Original Name"], row["Description"], row["Skip?"]) for row in translation_sheet.get_all_records()]
 
     needs_client_list = input("Do you want to create the client list? (y/n) ")
     if needs_client_list.lower() == "y":

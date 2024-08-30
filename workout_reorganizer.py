@@ -147,6 +147,9 @@ def main() -> None:
     client = gspread.service_account()
 
     spreadsheets_to_copy = fetch_list_of_files_in_folder(source_folder_id, client)
+    
+    translation_sheet = client.open("Workout Translations - TEST").sheet1
+    translation_data = [TranslationRow(row["Original Name"], row["Description"], row["Skip?"]) for row in translation_sheet.get_all_records()]
 
     needs_client_list = input("Do you want to create the client list? (y/n) ")
     if needs_client_list.lower() == "y":

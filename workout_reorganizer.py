@@ -68,7 +68,7 @@ def separate_and_copy_all_sheets_to_folder(
             remove_sheet1_from_spreadsheet(dest_spreadsheet)
 
 
-def should_process_spreadsheeet(spreadsheet: Spreadsheet, translations: [SpreadsheetRow]) -> bool:
+def should_process_spreadsheet(spreadsheet: Spreadsheet, translations: [SpreadsheetRow]) -> bool:
     """Check if translation sheet indicates that the workout should be skipped"""
     for translation in translations:
         if translation.original_name == spreadsheet.title:
@@ -152,7 +152,7 @@ def main() -> None:
 
     for spreadsheet in track(spreadsheets_to_copy, "Copying..."):
         spreadsheet = client.open_by_key(spreadsheet["id"])
-        if should_process_spreadsheeet(spreadsheet, translation_data):
+        if should_process_spreadsheet(spreadsheet, translation_data):
             separate_and_copy_all_sheets_to_folder(
                 spreadsheet, destination_folder_id, client, translation_data
             )

@@ -56,28 +56,23 @@ def create_new_spreadsheet(
 
 
 def separate_and_copy_all_sheets_to_folder(
-    spreadsheet: Spreadsheet, destination_folder_id: str, client: Client
+    spreadsheet: Spreadsheet, destination_folder_id: str, client: Client, translated_data: [TranslationRow]
 ) -> None:
     """Copy all the sheets for spreadsheet and make each into a new spreadsheet"""
     sheets = spreadsheet.worksheets()
     for sheet in sheets:
         if is_valid_workout(sheet):
-            title = get_dest_spreadsheet_title(spreadsheet, sheet, client)
+            title = get_dest_spreadsheet_title(spreadsheet, sheet, translated_data)
             dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
             sheet.copy_to(dest_spreadsheet.id)
             remove_sheet1_from_spreadsheet(dest_spreadsheet)
 
 
-def should_process_spreadsheeet(spreadsheet: Spreadsheet, client: Client) -> bool:
+def should_process_spreadsheeet(spreadsheet: Spreadsheet, translations: [TranslationRow]) -> bool:
     """Check if translation sheet indicates that the workout should be skipped"""
-    # TODO: Replace the hardcoded test name with the actual name of the translation spreadsheet
-    translation_sheet = client.open("Workout Translations - TEST").sheet1
-    translation_row = translation_sheet.find(spreadsheet.title).row
-    skip_cell = translation_sheet.cell(translation_row, 3).value
-    if skip_cell:
-        if skip_cell.lower() == "y":
-            return False
-    return True
+    for translation in translations:
+        if translation.original_name == spreadsheet.title:
+            return not translation.skip
 
 
 def is_valid_workout(worksheet: Worksheet) -> bool:
@@ -88,21 +83,18 @@ def is_valid_workout(worksheet: Worksheet) -> bool:
     return is_valid
 
 
-def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet, client: Client) -> str:
+def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet, translated_data: [TranslationRow]) -> str:
     """Create and return a title for the new spreadsheet"""
     tab_name = get_workout_description_for_worksheet(worksheet)
     source_title = spreadsheet.title
-    translated_source_title = translate_workout_name(source_title, client)
-    new_spreadsheet_name = tab_name + " - " +translated_source_title
+    translated_source_title = translate_workout_name(source_title, translated_data)
+    new_spreadsheet_name = tab_name + " - " + translated_source_title
     return new_spreadsheet_name
 
 
-def translate_workout_name(source_title: str, client: Client) -> str:
+def translate_workout_name(source_title: str, translated_data: [TranslationRow]) -> str:
     """Translate the workout title from the source title to a supplied description"""
-    # TODO: Replace the hardcoded test name with the actual name of the translation spreadsheet
-    translation_sheet = client.open("Workout Translations - TEST").sheet1
-    translation_row = translation_sheet.find(source_title).row
-    translated_name = translation_sheet.cell(translation_row, 2).value
+    translated_name = next(item.description for item in translated_data if item.original_name == source_title, None)
     return str(translated_name) if translated_name else str(source_title)
 
 
@@ -160,9 +152,9 @@ def main() -> None:
 
     for spreadsheet in track(spreadsheets_to_copy, "Copying..."):
         spreadsheet = client.open_by_key(spreadsheet["id"])
-        if should_process_spreadsheeet(spreadsheet, client):
+        if should_process_spreadsheeet(spreadsheet, translation_data):
             separate_and_copy_all_sheets_to_folder(
-                spreadsheet, destination_folder_id, client
+                spreadsheet, destination_folder_id, client, translation_data
             )
 
 

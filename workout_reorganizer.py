@@ -65,7 +65,7 @@ def separate_and_copy_all_sheets_to_folder(
             title = get_dest_spreadsheet_title(spreadsheet, sheet, translated_data)
             dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
             sheet.copy_to(dest_spreadsheet.id)
-            remove_sheet1_from_spreadsheet(dest_spreadsheet)
+            dest_spreadsheet.del_worksheet(dest_spreadsheet.sheet1)
 
 
 def should_process_spreadsheet(spreadsheet: Spreadsheet, translations: [SpreadsheetRow]) -> bool:
@@ -96,12 +96,6 @@ def translate_workout_name(source_title: str, translated_data: [SpreadsheetRow])
     """Translate the workout title from the source title to a supplied description"""
     translated_name = next((item.description for item in translated_data if item.original_name == source_title), None)
     return str(translated_name) if translated_name else str(source_title)
-
-
-def remove_sheet1_from_spreadsheet(spreadsheet: Spreadsheet) -> None:
-    """Remove the default 'Sheet1' from the spreadsheet"""
-    sheet1 = spreadsheet.worksheet("Sheet1")
-    spreadsheet.del_worksheet(sheet1)
 
 
 def get_client_name_list_from_spreadsheets(spreadsheets: [Spreadsheet]) -> [str]:

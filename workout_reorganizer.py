@@ -78,7 +78,7 @@ def should_process_spreadsheet(spreadsheet: Spreadsheet, translations: [Spreadsh
 def is_valid_workout(worksheet: Worksheet) -> bool:
     """Check that the worksheet is not a blank workout template"""
     canary_cell_value = worksheet.acell("A1").value
-    completely_blank = not any(worksheet.get_all_values())
+    completely_blank = not any(worksheet.get_values()) 
     is_valid = False if (canary_cell_value == "Name: " or completely_blank) else True 
     return is_valid
 

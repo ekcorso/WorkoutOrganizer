@@ -110,12 +110,11 @@ def get_client_name_list_from_spreadsheets(spreadsheets: [Spreadsheet]) -> [str]
 
 
 def create_workout_translation_spreadsheet(
-    origin_folder_id: str, dest_folder_id: str, client: Client
+    dest_folder_id: str, client: Client, current_client_files: [Spreadsheet]
 ) -> Spreadsheet:
     """Create a new spreadsheet in the destination folder with the title 'Workout Translation' and return the new spreadsheet
     with a list of all the client names in the origin folder."""
     spreadsheet = create_new_spreadsheet("Workout Translations", dest_folder_id, client)
-    current_client_files = fetch_list_of_files_in_folder(origin_folder_id, client)
     names = get_client_name_list_from_spreadsheets(current_client_files)
     sheet = spreadsheet.get_worksheet(0)
     sheet.append_row(["Original Name", "Description"])
@@ -146,7 +145,7 @@ def main() -> None:
     needs_client_list = input("Do you want to create the client list? (y/n) ")
     if needs_client_list.lower() == "y":
         create_workout_translation_spreadsheet(
-            source_folder_id, destination_folder_id, client
+            destination_folder_id, client, spreadsheets_to_copy
         )
 
 

@@ -116,9 +116,9 @@ def create_workout_translation_spreadsheet(
     with a list of all the client names in the origin folder."""
     spreadsheet = create_new_spreadsheet("Workout Translations", dest_folder_id, client)
     names = get_client_name_list_from_spreadsheets(current_client_files)
-    sheet = spreadsheet.get_worksheet(0)
-    sheet.append_row(["Original Name", "Description"])
-    sheet.append_rows(names)
+    sheet = spreadsheet.sheet1
+    all_rows = ["Original Name", "Description"].append(names)
+    sheet.append_rows(all_rows)
     return sheet
 
 

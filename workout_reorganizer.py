@@ -63,10 +63,15 @@ def separate_and_copy_all_sheets_to_folder(
     for sheet in sheets:
         canary_cells = sheet.batch_get(["A1", "B2", "B4"])
         if is_valid_workout(canary_cells):
-            title = get_dest_spreadsheet_title(spreadsheet, canary_cells, translated_data)
-            dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
-            sheet.copy_to(dest_spreadsheet.id)
-            dest_spreadsheet.del_worksheet(dest_spreadsheet.sheet1)
+            process_sheet(sheet, spreadsheet, destination_folder_id, client, translated_data)
+
+
+def process_sheet(sheet: Worksheet, spreadsheet: Spreadsheet, destination_folder_id: str, client: Client, translated_data: [SpreadsheetRow]) -> None:
+    """Process a single sheet and copy it to a new spreadsheet in the destination folder"""
+    title = get_dest_spreadsheet_title(spreadsheet, canary_cells, translated_data)
+    dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
+    sheet.copy_to(dest_spreadsheet.id)
+    dest_spreadsheet.del_worksheet(dest_spreadsheet.sheet1)
 
 
 def should_process_spreadsheet(spreadsheet: Spreadsheet, translations: [SpreadsheetRow]) -> bool:

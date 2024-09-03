@@ -61,9 +61,9 @@ def separate_and_copy_all_sheets_to_folder(
     """Copy all the sheets for spreadsheet and make each into a new spreadsheet"""
     sheets = spreadsheet.worksheets()
     for sheet in sheets:
-            title = get_dest_spreadsheet_title(spreadsheet, sheet, translated_data)
         canary_cells = sheet.batch_get(["A1", "B2", "B4"])
         if is_valid_workout(canary_cells):
+            title = get_dest_spreadsheet_title(spreadsheet, canary_cells, translated_data)
             dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
             sheet.copy_to(dest_spreadsheet.id)
             dest_spreadsheet.del_worksheet(dest_spreadsheet.sheet1)
@@ -95,9 +95,9 @@ def flatten_3d_list(data: list[list[list[str]]]) -> [str]:
    return [item for sublist1 in data for sublist2 in sublist1 for item in sublist2]
 
 
-def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet, translated_data: [SpreadsheetRow]) -> str:
+def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, canary_cells: list[list[list[str]]], translated_data: [SpreadsheetRow]) -> str:
     """Create and return a title for the new spreadsheet"""
-    tab_name = get_workout_description_for_worksheet(worksheet)
+    tab_name = get_workout_description_for_worksheet(canary_cells)
     source_title = spreadsheet.title
     translated_source_title = translate_workout_name(source_title, translated_data)
     new_spreadsheet_name = tab_name + " - " + translated_source_title
@@ -128,13 +128,17 @@ def create_workout_translation_spreadsheet(
     return sheet
 
 
-def get_workout_description_for_worksheet(worksheet: Worksheet) -> str:
+def get_workout_description_for_worksheet(canary_cells: list[list[list[str]]]) -> str:
     """Return the description of the workout from the spreadsheet"""
-    newer_description = worksheet.acell("B2").value
-    older_description = worksheet.acell("B4").value
-    canary_cell = worksheet.acell("A1").value # This cell will be blank if the workout is an older format
-    ret = older_description if not canary_cell else newer_description
-    return ret
+    canary_cell_location = 0 # A1: this cell will be blank if the workout is an older format
+    new_description_location = 1 # B2
+    old_description_location = 2 # B4
+    
+    canary_cell_value = get_value_at_location(canary_cells, canary_cell_location)
+    newer_description = get_value_at_location(canary_cells, new_description_location)
+    older_description = get_value_at_location(canary_cells, old_description_location)
+
+    return older_description if not canary_cell_value else newer_description
 
 
 def get_value_at_location(canary_cells: list[list[list[str]]], location: int) -> str:

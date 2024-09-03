@@ -10,6 +10,7 @@ Requirements:
 
 import gspread
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from gspread import Client
 from gspread.spreadsheet import Spreadsheet
 from gspread.worksheet import Worksheet
@@ -58,15 +59,22 @@ def create_new_spreadsheet(
 def separate_and_copy_all_sheets_to_folder(
     spreadsheet: Spreadsheet, destination_folder_id: str, client: Client, translated_data: [SpreadsheetRow]
 ) -> None:
-    """Copy all the sheets for spreadsheet and make each into a new spreadsheet"""
+    """Copy all the sheets for spreadsheet and make each into a new spreadsheet in parallel"""
     sheets = spreadsheet.worksheets()
-    for sheet in sheets:
-        canary_cells = sheet.batch_get(["A1", "B2", "B4"])
-        if is_valid_workout(canary_cells):
-            process_sheet(sheet, spreadsheet, destination_folder_id, client, translated_data)
+
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        futures = []
+
+        for sheet in sheets:
+            canary_cells = sheet.batch_get(["A1", "B2", "B4"])
+            if is_valid_workout(canary_cells):
+                futures.append(executor.submit(process_sheet, sheet, spreadsheet, destination_folder_id, client, canary_cells, translated_data))
+
+        for future in as_completed(futures):
+            future.result()
 
 
-def process_sheet(sheet: Worksheet, spreadsheet: Spreadsheet, destination_folder_id: str, client: Client, translated_data: [SpreadsheetRow]) -> None:
+def process_sheet(sheet: Worksheet, spreadsheet: Spreadsheet, destination_folder_id: str, client: Client, canary_cells: list[list[list[str]]], translated_data: [SpreadsheetRow]) -> None:
     """Process a single sheet and copy it to a new spreadsheet in the destination folder"""
     title = get_dest_spreadsheet_title(spreadsheet, canary_cells, translated_data)
     dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)

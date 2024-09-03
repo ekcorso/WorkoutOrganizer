@@ -85,15 +85,14 @@ def is_valid_workout(canary_cells: list[list[list[str]]]) -> bool:
     else:
         canary_cell_value = ""
 
-    completely_blank = is_empty_3d_list(canary_cells)
+    completely_blank = not any(flatten_3d_list(canary_cells))
     is_valid = False if (canary_cell_value == "Name: " or completely_blank) else True 
     return is_valid
 
 
-def is_empty_3d_list(data: list[list[list[str]]]) -> bool:
-   """Check if the 3D list is empty"""
-   flattened_list = [item for sublist1 in data for sublist2 in sublist1 for item in sublist2]
-   return not any(flattened_list)
+def flatten_3d_list(data: list[list[list[str]]]) -> [str]:
+   """Flatten a 3D list"""
+   return [item for sublist1 in data for sublist2 in sublist1 for item in sublist2]
 
 
 def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet, translated_data: [SpreadsheetRow]) -> str:

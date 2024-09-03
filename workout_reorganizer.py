@@ -97,7 +97,7 @@ def flatten_3d_list(data: list[list[list[str]]]) -> [str]:
 
 def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, canary_cells: list[list[list[str]]], translated_data: [SpreadsheetRow]) -> str:
     """Create and return a title for the new spreadsheet"""
-    tab_name = get_workout_description_for_worksheet(canary_cells)
+    tab_name = get_workout_description(canary_cells)
     source_title = spreadsheet.title
     translated_source_title = translate_workout_name(source_title, translated_data)
     new_spreadsheet_name = tab_name + " - " + translated_source_title
@@ -128,7 +128,7 @@ def create_workout_translation_spreadsheet(
     return sheet
 
 
-def get_workout_description_for_worksheet(canary_cells: list[list[list[str]]]) -> str:
+def get_workout_description(canary_cells: list[list[list[str]]]) -> str:
     """Return the description of the workout from the spreadsheet"""
     canary_cell_location = 0 # A1: this cell will be blank if the workout is an older format
     new_description_location = 1 # B2

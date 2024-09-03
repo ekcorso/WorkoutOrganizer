@@ -61,8 +61,9 @@ def separate_and_copy_all_sheets_to_folder(
     """Copy all the sheets for spreadsheet and make each into a new spreadsheet"""
     sheets = spreadsheet.worksheets()
     for sheet in sheets:
-        if is_valid_workout(sheet):
             title = get_dest_spreadsheet_title(spreadsheet, sheet, translated_data)
+        canary_cells = sheet.batch_get(["A1", "B2", "B4"])
+        if is_valid_workout(canary_cells):
             dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
             sheet.copy_to(dest_spreadsheet.id)
             dest_spreadsheet.del_worksheet(dest_spreadsheet.sheet1)
@@ -75,10 +76,16 @@ def should_process_spreadsheet(spreadsheet: Spreadsheet, translations: [Spreadsh
             return not translation.skip
 
 
-def is_valid_workout(worksheet: Worksheet) -> bool:
+def is_valid_workout(canary_cells: list[list[list[str]]]) -> bool:
     """Check that the worksheet is not a blank workout template"""
-    canary_cell_value = worksheet.acell("A1").value
-    completely_blank = not any(worksheet.get_values()) 
+    canary_cell_value = "" # A1
+
+    if isinstance(canary_cells[0], list) and canary_cells[0]:
+        canary_cell_value = canary_cells[0][0][0] if isinstance(canary_cells[0][0][0], str) else ""
+    else:
+        canary_cell_value = ""
+
+    completely_blank = is_empty_3d_list(canary_cells)
     is_valid = False if (canary_cell_value == "Name: " or completely_blank) else True 
     return is_valid
 

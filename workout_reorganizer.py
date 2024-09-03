@@ -83,6 +83,12 @@ def is_valid_workout(worksheet: Worksheet) -> bool:
     return is_valid
 
 
+def is_empty_3d_list(data: list[list[list[str]]]) -> bool:
+   """Check if the 3D list is empty"""
+   flattened_list = [item for sublist1 in data for sublist2 in sublist1 for item in sublist2]
+   return not any(flattened_list)
+
+
 def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, worksheet: Worksheet, translated_data: [SpreadsheetRow]) -> str:
     """Create and return a title for the new spreadsheet"""
     tab_name = get_workout_description_for_worksheet(worksheet)

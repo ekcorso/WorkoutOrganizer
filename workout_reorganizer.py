@@ -67,16 +67,17 @@ def separate_and_copy_all_sheets_to_folder(
 
         for sheet in sheets:
             canary_cells = sheet.batch_get(["A1", "B2", "B4"])
-            if is_valid_workout(canary_cells):
-                futures.append(executor.submit(process_sheet, sheet, spreadsheet, destination_folder_id, client, canary_cells, translated_data))
+            previous_description = get_workout_description(canary_cells)
+            if is_valid_workout(canary_cells, previous_description):
+                futures.append(executor.submit(process_sheet, sheet, spreadsheet, destination_folder_id, client, previous_description, translated_data))
 
         for future in as_completed(futures):
             future.result()
 
 
-def process_sheet(sheet: Worksheet, spreadsheet: Spreadsheet, destination_folder_id: str, client: Client, canary_cells: list[list[list[str]]], translated_data: [SpreadsheetRow]) -> None:
+def process_sheet(sheet: Worksheet, spreadsheet: Spreadsheet, destination_folder_id: str, client: Client, previous_description: str, translated_data: [SpreadsheetRow]) -> None:
     """Process a single sheet and copy it to a new spreadsheet in the destination folder"""
-    title = get_dest_spreadsheet_title(spreadsheet, canary_cells, translated_data)
+    title = get_dest_spreadsheet_title(spreadsheet, previous_description, translated_data)
     dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
     sheet.copy_to(dest_spreadsheet.id)
     dest_spreadsheet.del_worksheet(dest_spreadsheet.sheet1)
@@ -89,7 +90,7 @@ def should_process_spreadsheet(spreadsheet: Spreadsheet, translations: [Spreadsh
             return not translation.skip
 
 
-def is_valid_workout(canary_cells: list[list[list[str]]]) -> bool:
+def is_valid_workout(canary_cells: list[list[list[str]]], previous_description: str) -> bool:
     """Check that the worksheet is not a blank workout template"""
     canary_cell_value = "" # A1
 
@@ -99,7 +100,8 @@ def is_valid_workout(canary_cells: list[list[list[str]]]) -> bool:
         canary_cell_value = ""
 
     completely_blank = not any(flatten_3d_list(canary_cells))
-    is_valid = False if (canary_cell_value == "Name: " or completely_blank) else True 
+    is_foundation_workout = "Foundation 1" in previous_description
+    is_valid = False if (canary_cell_value == "Name: " or is_foundation_workout or completely_blank) else True 
     return is_valid
 
 
@@ -108,12 +110,11 @@ def flatten_3d_list(data: list[list[list[str]]]) -> [str]:
    return [item for sublist1 in data for sublist2 in sublist1 for item in sublist2]
 
 
-def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, canary_cells: list[list[list[str]]], translated_data: [SpreadsheetRow]) -> str:
+def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, previous_description: str, translated_data: [SpreadsheetRow]) -> str:
     """Create and return a title for the new spreadsheet"""
-    tab_name = get_workout_description(canary_cells)
     source_title = spreadsheet.title
     translated_source_title = translate_workout_name(source_title, translated_data)
-    new_spreadsheet_name = tab_name + " - " + translated_source_title
+    new_spreadsheet_name = previous_description + " - " + translated_source_title
     return new_spreadsheet_name
 
 

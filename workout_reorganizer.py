@@ -138,7 +138,7 @@ def create_workout_translation_spreadsheet(
     spreadsheet = create_new_spreadsheet("Workout Translations", dest_folder_id, client)
     names = get_client_name_list_from_spreadsheets(current_client_files)
     sheet = spreadsheet.sheet1
-    all_rows = ["Original Name", "Description"].append(names)
+    all_rows = [["Original Name", "Description", "Skip?"]] + names
     sheet.append_rows(all_rows)
     return sheet
 

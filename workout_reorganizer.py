@@ -115,7 +115,7 @@ def get_dest_spreadsheet_title(spreadsheet: Spreadsheet, previous_description: s
     source_title = spreadsheet.title
     translated_source_title = translate_workout_name(source_title, translated_data)
     new_spreadsheet_name = previous_description + " - " + translated_source_title
-    return new_spreadsheet_name
+    return new_spreadsheet_name.title()
 
 
 def translate_workout_name(source_title: str, translated_data: [SpreadsheetRow]) -> str:

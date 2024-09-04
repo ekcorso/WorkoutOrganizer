@@ -79,7 +79,8 @@ def process_sheet(sheet: Worksheet, spreadsheet: Spreadsheet, destination_folder
     """Process a single sheet and copy it to a new spreadsheet in the destination folder"""
     title = get_dest_spreadsheet_title(spreadsheet, previous_description, translated_data)
     dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
-    sheet.copy_to(dest_spreadsheet.id)
+    new_worksheet = sheet.copy_to(dest_spreadsheet.id)
+    dest_spreadsheet.get_worksheet_by_id(new_worksheet["sheetId"]).update_title("Workout")
     dest_spreadsheet.del_worksheet(dest_spreadsheet.sheet1)
 
 

@@ -212,7 +212,11 @@ def get_workout_description(canary_cells: list[list[list[str]]]) -> str:
 def get_value_at_location(canary_cells: list[list[list[str]]], location: int) -> str:
     """Return the value at the given location in the 3d list"""
     if canary_cells[location] and isinstance(canary_cells[location], list):
-        return canary_cells[location][0][0] if isinstance(canary_cells[location][0][0], str) else ""
+        return (
+            canary_cells[location][0][0]
+            if isinstance(canary_cells[location][0][0], str)
+            else ""
+        )
     else:
         return ""
 

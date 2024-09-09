@@ -38,7 +38,7 @@ class SpreadsheetRow:
         return False
 
 
-def fetch_list_of_files_in_folder(folder_id: str, client: Client) -> [Spreadsheet]:
+def fetch_list_of_files_in_folder(folder_id: str, client: Client) -> list[Spreadsheet]:
     """Fetch a list of files in the given folder and return a list of Spreadsheet objects"""
     spreadsheets_in_folder = client.list_spreadsheet_files(
         title=None, folder_id=folder_id
@@ -64,7 +64,7 @@ def separate_and_copy_all_sheets_to_folder(
     spreadsheet: Spreadsheet,
     destination_folder_id: str,
     client: Client,
-    translated_data: [SpreadsheetRow],
+    translated_data: list[SpreadsheetRow],
 ) -> None:
     """Copy all the sheets for spreadsheet and make each into a new spreadsheet in parallel"""
     sheets = spreadsheet.worksheets()
@@ -98,7 +98,7 @@ def process_sheet(
     destination_folder_id: str,
     client: Client,
     previous_description: str,
-    translated_data: [SpreadsheetRow],
+    translated_data: list[SpreadsheetRow],
 ) -> None:
     """Process a single sheet and copy it to a new spreadsheet in the destination folder"""
     title = get_dest_spreadsheet_title(
@@ -113,7 +113,7 @@ def process_sheet(
 
 
 def should_process_spreadsheet(
-    spreadsheet: Spreadsheet, translations: [SpreadsheetRow]
+    spreadsheet: Spreadsheet, translations: list[SpreadsheetRow]
 ) -> bool:
     """Check if translation sheet indicates that the workout should be skipped"""
     for translation in translations:
@@ -144,7 +144,7 @@ def is_valid_workout(
     return is_valid
 
 
-def flatten_3d_list(data: list[list[list[str]]]) -> [str]:
+def flatten_3d_list(data: list[list[list[str]]]) -> list[str]:
     """Flatten a 3D list"""
     return [item for sublist1 in data for sublist2 in sublist1 for item in sublist2]
 
@@ -152,7 +152,7 @@ def flatten_3d_list(data: list[list[list[str]]]) -> [str]:
 def get_dest_spreadsheet_title(
     spreadsheet: Spreadsheet,
     previous_description: str,
-    translated_data: [SpreadsheetRow],
+    translated_data: list[SpreadsheetRow],
 ) -> str:
     """Create and return a title for the new spreadsheet"""
     source_title = spreadsheet.title
@@ -161,7 +161,7 @@ def get_dest_spreadsheet_title(
     return new_spreadsheet_name.title()
 
 
-def translate_workout_name(source_title: str, translated_data: [SpreadsheetRow]) -> str:
+def translate_workout_name(source_title: str, translated_data: list[SpreadsheetRow]) -> str:
     """Translate the workout title from the source title to a supplied description"""
     translated_name = next(
         (
@@ -174,13 +174,13 @@ def translate_workout_name(source_title: str, translated_data: [SpreadsheetRow])
     return str(translated_name) if translated_name else str(source_title)
 
 
-def get_client_name_list_from_spreadsheets(spreadsheets: [Spreadsheet]) -> [str]:
+def get_client_name_list_from_spreadsheets(spreadsheets: list[Spreadsheet]) -> list[list[str]]:
     """Return a list of titles for the given list of spreadsheets"""
     return [[sheet["name"]] for sheet in spreadsheets]
 
 
 def create_workout_translation_spreadsheet(
-    dest_folder_id: str, client: Client, current_client_files: [Spreadsheet]
+    dest_folder_id: str, client: Client, current_client_files: list[Spreadsheet]
 ) -> Spreadsheet:
     """Create a new spreadsheet in the destination folder with the title 'Workout Translations' and return the new spreadsheet
     with a list of all the client names in the origin folder."""

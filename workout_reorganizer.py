@@ -12,8 +12,8 @@ import gspread
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from gspread import Client
-from gspread.spreadsheet import Spreadsheet
-from gspread.worksheet import Worksheet
+from gspread import Spreadsheet
+from gspread import Worksheet
 
 from rich.progress import track
 

@@ -8,7 +8,7 @@ Requirements:
 - Pip install the following: google-api-python-client, gspread
 """
 
-import gspread
+import gspread # type: ignore[import-untyped]
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from gspread import Client

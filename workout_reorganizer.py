@@ -119,7 +119,7 @@ def should_process_spreadsheet(
     for translation in translations:
         if translation.original_name == spreadsheet.title:
             return not translation.skip
-
+    return False # If no translation is found, skip the workout
 
 def is_valid_workout(
     canary_cells: list[list[list[str]]], previous_description: str

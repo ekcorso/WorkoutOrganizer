@@ -73,7 +73,7 @@ def separate_and_copy_all_sheets_to_folder(
         futures = []
 
         for sheet in sheets:
-            canary_cells = sheet.batch_get(["A1", "B2", "B4"])
+            canary_cells = sheet.batch_get(["A1", "B1", "B2", "B3", "B4"])
             previous_description = get_workout_description(canary_cells)
             if is_valid_workout(canary_cells, previous_description):
                 futures.append(
@@ -213,8 +213,8 @@ def get_workout_description(canary_cells: list[list[list[str]]]) -> str:
     canary_cell_location = (
         0  # A1: this cell will be blank if the workout is an older format
     )
-    new_description_location = 1  # B2
-    old_description_location = 2  # B4
+    new_description_location = 2  # B2
+    old_description_location = 4  # B4
 
     canary_cell_value = get_value_at_location(canary_cells, canary_cell_location)
     newer_description = get_value_at_location(canary_cells, new_description_location)

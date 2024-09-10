@@ -108,7 +108,7 @@ def process_sheet(
     new_worksheet_data = sheet.copy_to(dest_spreadsheet.id) # Copy the sheet to the new spreadsheet
     new_worksheet = dest_spreadsheet.get_worksheet_by_id(new_worksheet_data["sheetId"])
     new_worksheet.update_title("Workout")
-    delete_client_name(sheet.batch_get(["A1", "B1", "B2", "B3", "B4"]), new_worksheet)
+    delete_client_data(sheet.batch_get(["A1", "B1", "B2", "B3", "B4"]), new_worksheet)
     dest_spreadsheet.del_worksheet(dest_spreadsheet.sheet1)
 
 
@@ -145,7 +145,7 @@ def is_valid_workout(
     return is_valid
 
 
-def delete_client_name(canary_cells: list[list[list[str]]], sheet: Worksheet): 
+def delete_client_data(canary_cells: list[list[list[str]]], sheet: Worksheet):
     """Delete client name from the worksheet"""
     new_name_location = 1  # B1
     old_name_location = 3  # B3
@@ -154,9 +154,11 @@ def delete_client_name(canary_cells: list[list[list[str]]], sheet: Worksheet):
     new_name = get_value_at_location(canary_cells, new_name_location)
 
     if new_name:
-        sheet.update_cell(1, 2, "")
+        # Delete the client name and any additional private data in the 1st row
+        sheet.batch_update([{"range": "B1:D1", "values": [["", "", ""]]}])
     elif old_name:
         sheet.update_cell(3, 2, "")
+
 
 def flatten_3d_list(data: list[list[list[str]]]) -> list[str]:
     """Flatten a 3D list"""

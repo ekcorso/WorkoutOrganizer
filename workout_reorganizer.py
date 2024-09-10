@@ -121,6 +121,7 @@ def should_process_spreadsheet(
             return not translation.skip
     return False # If no translation is found, skip the workout
 
+
 def is_valid_workout(
     canary_cells: list[list[list[str]]], previous_description: str
 ) -> bool:
@@ -239,7 +240,6 @@ def main() -> None:
         create_workout_translation_spreadsheet(
             destination_folder_id, client, spreadsheets_to_copy
         )
-
 
     for spreadsheet in track(spreadsheets_to_copy, "Copying..."):
         spreadsheet = client.open_by_key(spreadsheet["id"])

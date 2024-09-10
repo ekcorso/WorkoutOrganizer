@@ -105,10 +105,10 @@ def process_sheet(
         spreadsheet, previous_description, translated_data
     )
     dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
-    new_worksheet = sheet.copy_to(dest_spreadsheet.id)
-    dest_spreadsheet.get_worksheet_by_id(new_worksheet["sheetId"]).update_title(
-        "Workout"
-    )
+    new_worksheet_data = sheet.copy_to(dest_spreadsheet.id) # Copy the sheet to the new spreadsheet
+    new_worksheet = dest_spreadsheet.get_worksheet_by_id(new_worksheet_data["sheetId"])
+    new_worksheet.update_title("Workout")
+    delete_client_name(sheet.batch_get(["A1", "B1", "B2", "B3", "B4"]), new_worksheet)
     dest_spreadsheet.del_worksheet(dest_spreadsheet.sheet1)
 
 

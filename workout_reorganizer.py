@@ -8,7 +8,7 @@ Requirements:
 - Pip install the following: google-api-python-client, gspread
 """
 
-import gspread # type: ignore[import-untyped]
+import gspread  # type: ignore[import-untyped]
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from gspread import Client
@@ -105,7 +105,9 @@ def process_sheet(
         spreadsheet, previous_description, translated_data
     )
     dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
-    new_worksheet_data = sheet.copy_to(dest_spreadsheet.id) # Copy the sheet to the new spreadsheet
+    new_worksheet_data = sheet.copy_to(
+        dest_spreadsheet.id
+    )  # Copy the sheet to the new spreadsheet
     new_worksheet = dest_spreadsheet.get_worksheet_by_id(new_worksheet_data["sheetId"])
     new_worksheet.update_title("Workout")
     delete_client_data(sheet.batch_get(["A1", "B1", "B2", "B3", "B4"]), new_worksheet)
@@ -119,7 +121,7 @@ def should_process_spreadsheet(
     for translation in translations:
         if translation.original_name == spreadsheet.title:
             return not translation.skip
-    return False # If no translation is found, skip the workout
+    return False  # If no translation is found, skip the workout
 
 
 def is_valid_workout(
@@ -177,7 +179,9 @@ def get_dest_spreadsheet_title(
     return new_spreadsheet_name.title()
 
 
-def translate_workout_name(source_title: str, translated_data: list[SpreadsheetRow]) -> str:
+def translate_workout_name(
+    source_title: str, translated_data: list[SpreadsheetRow]
+) -> str:
     """Translate the workout title from the source title to a supplied description"""
     translated_name = next(
         (
@@ -190,7 +194,9 @@ def translate_workout_name(source_title: str, translated_data: list[SpreadsheetR
     return str(translated_name) if translated_name else str(source_title)
 
 
-def get_client_name_list_from_spreadsheets(spreadsheets: list[Spreadsheet]) -> list[list[str]]:
+def get_client_name_list_from_spreadsheets(
+    spreadsheets: list[Spreadsheet],
+) -> list[list[str]]:
     """Return a list of titles for the given list of spreadsheets"""
     return [[sheet["name"]] for sheet in spreadsheets]
 

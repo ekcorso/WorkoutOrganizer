@@ -145,6 +145,19 @@ def is_valid_workout(
     return is_valid
 
 
+def delete_client_name(canary_cells: list[list[list[str]]], sheet: Worksheet): 
+    """Delete client name from the worksheet"""
+    new_name_location = 1  # B1
+    old_name_location = 3  # B3
+
+    old_name = get_value_at_location(canary_cells, old_name_location)
+    new_name = get_value_at_location(canary_cells, new_name_location)
+
+    if new_name:
+        sheet.update_cell(1, 2, "")
+    elif old_name:
+        sheet.update_cell(3, 2, "")
+
 def flatten_3d_list(data: list[list[list[str]]]) -> list[str]:
     """Flatten a 3D list"""
     return [item for sublist1 in data for sublist2 in sublist1 for item in sublist2]

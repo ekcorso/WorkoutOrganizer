@@ -44,6 +44,7 @@ class SpreadsheetRow:
         return False
 
 
+@common_retry
 def fetch_list_of_files_in_folder(folder_id: str, client: Client) -> list[Spreadsheet]:
     """Fetch a list of files in the given folder and return a list of Spreadsheet objects"""
     spreadsheets_in_folder = client.list_spreadsheet_files(
@@ -153,6 +154,7 @@ def is_valid_workout(
     return is_valid
 
 
+@common_retry
 def delete_client_data(canary_cells: list[list[list[str]]], sheet: Worksheet):
     """Delete client name from the worksheet"""
     new_name_location = 1  # B1

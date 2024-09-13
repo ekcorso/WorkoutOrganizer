@@ -132,7 +132,7 @@ def process_sheet(
     dest_spreadsheet = create_and_share_new_spreadsheet(title, destination_folder_id, client)
     new_worksheet_data = copy_workout_to_new_spreadsheet(dest_spreadsheet.id, sheet)
     new_worksheet = get_worksheet_from_data(new_worksheet_data, dest_spreadsheet)
-    new_worksheet.update_title("Workout")
+    rename_worksheet(new_worksheet, title)
     delete_client_data(get_canary_cells(sheet), new_worksheet)
     dest_spreadsheet.del_worksheet(dest_spreadsheet.sheet1)
 
@@ -146,6 +146,11 @@ def copy_workout_to_new_spreadsheet(dest_spreadsheet_id: str, sheet: Worksheet) 
 @common_retry
 def get_worksheet_from_data(data: dict[str, str], dest_spreadsheet: Spreadsheet) -> Worksheet:
     return dest_spreadsheet.get_worksheet_by_id(data["sheetId"])
+
+
+@common_retry
+def rename_worksheet(worksheet: Worksheet, new_title: str) -> None:
+    worksheet.update_title(new_title)
 
 
 def should_process_spreadsheet(

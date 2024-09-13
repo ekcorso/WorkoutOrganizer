@@ -74,6 +74,7 @@ def share_spreadsheet(sheet: Spreadsheet) -> None:
 
 
 def create_and_share_new_spreadsheet(title: str, dest_folder_id: str, client: Client) -> Spreadsheet:
+    """Create a new spreadsheet, share it, and return it"""
     sheet = create_new_spreadsheet(title, dest_folder_id, client)
     share_spreadsheet(sheet)
     return sheet
@@ -139,17 +140,20 @@ def process_sheet(
 
 @common_retry
 def copy_workout_to_new_spreadsheet(dest_spreadsheet_id: str, sheet: Worksheet) -> dict[str, str]:
+    """Copy the worksheet to the new spreadsheet and return the new worksheet json data"""
     new_worksheet_data = sheet.copy_to(dest_spreadsheet_id)
     return new_worksheet_data
 
 
 @common_retry
 def get_worksheet_from_data(data: dict[str, str], dest_spreadsheet: Spreadsheet) -> Worksheet:
+    """Get the Worksheet object from the json data, then return it"""
     return dest_spreadsheet.get_worksheet_by_id(data["sheetId"])
 
 
 @common_retry
 def rename_worksheet(worksheet: Worksheet, new_title: str) -> None:
+    """Rename the worksheet to the new title"""
     worksheet.update_title(new_title)
 
 

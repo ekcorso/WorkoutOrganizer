@@ -329,10 +329,15 @@ def main() -> None:
     print("Hint: folder IDs are in the URL of the folder in Google Drive.")
     source_folder_id = str(input("Please enter the source folder ID: "))
     destination_folder_id = str(input("Please enter the destination folder ID: "))
+    translation_sheet_id = str(input("Please enter the Translation sheet ID: "))
     client = get_client()
 
     spreadsheets_to_copy = fetch_list_of_files_in_folder(source_folder_id, client)
-    translation_sheet = client.open("Workout Translations - TEST").sheet1
+
+    translation_sheet = open_spreadsheet_by_key(
+        translation_sheet_id, client
+    ).sheet1
+
     translation_data = get_translation_data(translation_sheet)
 
     needs_client_list = input("Do you want to create the client list? (y/n) ")

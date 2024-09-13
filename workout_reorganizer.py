@@ -58,12 +58,24 @@ def fetch_list_of_files_in_folder(folder_id: str, client: Client) -> list[Spread
     return valid_spreadsheets
 
 
+@common_retry
 def create_new_spreadsheet(
     title: str, dest_folder_id: str, client: Client
 ) -> Spreadsheet:
     """Create a new spreadsheet in the destination folder with the given title and return the new spreadsheet"""
     sheet = client.create(title, folder_id=dest_folder_id)
+    return sheet
+
+
+@common_retry
+def share_spreadsheet(sheet: Spreadsheet) -> None:
+    """Share the spreadsheet with the service account email address"""
     sheet.share("ekcorso@gmail.com", perm_type="user", role="writer", notify=False)
+
+
+def create_and_share_new_spreadsheet(title: str, dest_folder_id: str, client: Client) -> Spreadsheet:
+    sheet = create_new_spreadsheet(title, dest_folder_id, client)
+    share_spreadsheet(sheet)
     return sheet
 
 
@@ -111,7 +123,7 @@ def process_sheet(
     title = get_dest_spreadsheet_title(
         spreadsheet, previous_description, translated_data
     )
-    dest_spreadsheet = create_new_spreadsheet(title, destination_folder_id, client)
+    dest_spreadsheet = create_and_share_new_spreadsheet(title, destination_folder_id, client)
     new_worksheet_data = sheet.copy_to(
         dest_spreadsheet.id
     )  # Copy the sheet to the new spreadsheet

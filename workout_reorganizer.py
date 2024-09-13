@@ -17,6 +17,12 @@ from gspread import Worksheet
 
 from rich.progress import track
 
+from tenacity import retry, stop_after_attempt, wait_exponential
+
+common_retry = retry(
+    stop=stop_after_attempt(5),
+    wait=wait_exponential(multiplier=1, min=1, max=60),
+)
 
 class SpreadsheetRow:
     original_name: str

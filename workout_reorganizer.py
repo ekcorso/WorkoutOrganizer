@@ -313,6 +313,12 @@ def get_translation_data(sheet: Worksheet) -> list[SpreadsheetRow]:
     ]
 
 
+@common_retry
+def open_spreadsheet_by_key(key: str, client: Client) -> Spreadsheet:
+    """Open a spreadsheet by key and return it"""
+    return client.open_by_key(key)
+
+
 def main() -> None:
     print("Hint: folder IDs are in the URL of the folder in Google Drive.")
     source_folder_id = str(input("Please enter the source folder ID: "))
@@ -330,7 +336,7 @@ def main() -> None:
         )
 
     for spreadsheet in track(spreadsheets_to_copy, "Copying..."):
-        spreadsheet = client.open_by_key(spreadsheet["id"])
+        spreadsheet = open_spreadsheet_by_key(spreadsheet["id"], client)
         if should_process_spreadsheet(spreadsheet, translation_data):
             separate_and_copy_all_sheets_to_folder(
                 spreadsheet, destination_folder_id, client, translation_data

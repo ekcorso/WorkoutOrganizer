@@ -259,10 +259,21 @@ def create_workout_translation_spreadsheet(
     spreadsheet = create_and_share_new_spreadsheet(
         "Workout Translations", dest_folder_id, client
     )  # Create in dest folder so that the client's original folder is never modified
-    names = get_client_name_list_from_spreadsheets(current_client_files)
+
+    sheet = append_rows_to_sheet(spreadsheet, current_client_files)
+    return sheet
+
+
+@common_retry
+def append_rows_to_sheet(spreadsheet: Spreadsheet, current_client_files: list[Spreadsheet]) -> Worksheet:
+    """Append rows to the given worksheet"""
     sheet = spreadsheet.sheet1
+
+    names = get_client_name_list_from_spreadsheets(current_client_files)
     all_rows = [["Original Name", "Description", "Skip?"]] + names
+
     sheet.append_rows(all_rows)
+
     return sheet
 
 

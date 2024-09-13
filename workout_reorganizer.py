@@ -92,7 +92,7 @@ def separate_and_copy_all_sheets_to_folder(
         futures = []
 
         for sheet in sheets:
-            canary_cells = sheet.batch_get(["A1", "B1", "B2", "B3", "B4"])
+            canary_cells = get_canary_cells(sheet)
             previous_description = get_workout_description(canary_cells)
             if is_valid_workout(canary_cells, previous_description):
                 futures.append(
@@ -109,6 +109,12 @@ def separate_and_copy_all_sheets_to_folder(
 
         for future in as_completed(futures):
             future.result()
+
+
+@common_retry
+def get_canary_cells(sheet: Worksheet) -> list[list[list[str]]]:
+    """Get the values of the canary cells from the sheet"""
+    return sheet.batch_get(["A1", "B1", "B2", "B3", "B4"])
 
 
 def process_sheet(
@@ -129,7 +135,7 @@ def process_sheet(
     )  # Copy the sheet to the new spreadsheet
     new_worksheet = dest_spreadsheet.get_worksheet_by_id(new_worksheet_data["sheetId"])
     new_worksheet.update_title("Workout")
-    delete_client_data(sheet.batch_get(["A1", "B1", "B2", "B3", "B4"]), new_worksheet)
+    delete_client_data(get_canary_cells(sheet), new_worksheet)
     dest_spreadsheet.del_worksheet(dest_spreadsheet.sheet1)
 
 

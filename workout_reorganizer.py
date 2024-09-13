@@ -130,13 +130,18 @@ def process_sheet(
         spreadsheet, previous_description, translated_data
     )
     dest_spreadsheet = create_and_share_new_spreadsheet(title, destination_folder_id, client)
-    new_worksheet_data = sheet.copy_to(
-        dest_spreadsheet.id
-    )  # Copy the sheet to the new spreadsheet
+    new_worksheet_data = copy_workout_to_new_spreadsheet(dest_spreadsheet.id, sheet)
+
     new_worksheet = dest_spreadsheet.get_worksheet_by_id(new_worksheet_data["sheetId"])
     new_worksheet.update_title("Workout")
     delete_client_data(get_canary_cells(sheet), new_worksheet)
     dest_spreadsheet.del_worksheet(dest_spreadsheet.sheet1)
+
+
+@common_retry
+def copy_workout_to_new_spreadsheet(dest_spreadsheet_id: str, sheet: Worksheet) -> dict[str, str]:
+    new_worksheet_data = sheet.copy_to(dest_spreadsheet_id)
+    return new_worksheet_data
 
 
 def should_process_spreadsheet(

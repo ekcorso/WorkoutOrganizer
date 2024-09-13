@@ -134,7 +134,7 @@ def process_sheet(
     new_worksheet = get_worksheet_from_data(new_worksheet_data, dest_spreadsheet)
     rename_worksheet(new_worksheet, title)
     delete_client_data(get_canary_cells(sheet), new_worksheet)
-    dest_spreadsheet.del_worksheet(dest_spreadsheet.sheet1)
+    delete_empty_sheet1(dest_spreadsheet)
 
 
 @common_retry
@@ -151,6 +151,12 @@ def get_worksheet_from_data(data: dict[str, str], dest_spreadsheet: Spreadsheet)
 @common_retry
 def rename_worksheet(worksheet: Worksheet, new_title: str) -> None:
     worksheet.update_title(new_title)
+
+
+@common_retry
+def delete_empty_sheet1(spreadsheet: Spreadsheet) -> None:
+    """Delete the empty first sheet in the spreadsheet that is created by default"""
+    spreadsheet.del_worksheet(spreadsheet.sheet1)
 
 
 def should_process_spreadsheet(

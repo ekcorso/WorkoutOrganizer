@@ -304,6 +304,15 @@ def get_value_at_location(canary_cells: list[list[list[str]]], location: int) ->
         return ""
 
 
+@common_retry
+def get_translation_data(sheet: Worksheet) -> list[SpreadsheetRow]:
+    """Get the translation data from the given worksheet"""
+    return [
+        SpreadsheetRow(row["Original Name"], row["Description"], row["Skip?"])
+        for row in sheet.get_all_records()
+    ]
+
+
 def main() -> None:
     print("Hint: folder IDs are in the URL of the folder in Google Drive.")
     source_folder_id = str(input("Please enter the source folder ID: "))
@@ -312,10 +321,7 @@ def main() -> None:
 
     spreadsheets_to_copy = fetch_list_of_files_in_folder(source_folder_id, client)
     translation_sheet = client.open("Workout Translations - TEST").sheet1
-    translation_data = [
-        SpreadsheetRow(row["Original Name"], row["Description"], row["Skip?"])
-        for row in translation_sheet.get_all_records()
-    ]
+    translation_data = get_translation_data(translation_sheet)
 
     needs_client_list = input("Do you want to create the client list? (y/n) ")
     if needs_client_list.lower() == "y":

@@ -319,11 +319,17 @@ def open_spreadsheet_by_key(key: str, client: Client) -> Spreadsheet:
     return client.open_by_key(key)
 
 
+@common_retry
+def get_client() -> Client:
+    """Get the client object"""
+    return gspread.service_account()
+
+
 def main() -> None:
     print("Hint: folder IDs are in the URL of the folder in Google Drive.")
     source_folder_id = str(input("Please enter the source folder ID: "))
     destination_folder_id = str(input("Please enter the destination folder ID: "))
-    client = gspread.service_account()
+    client = get_client()
 
     spreadsheets_to_copy = fetch_list_of_files_in_folder(source_folder_id, client)
     translation_sheet = client.open("Workout Translations - TEST").sheet1

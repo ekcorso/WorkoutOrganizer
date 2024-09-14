@@ -24,6 +24,7 @@ common_retry = retry(
     wait=wait_exponential(multiplier=1, min=1, max=60),
 )
 
+
 class SpreadsheetRow:
     original_name: str
     description: str
@@ -73,7 +74,9 @@ def share_spreadsheet(sheet: Spreadsheet) -> None:
     sheet.share("ekcorso@gmail.com", perm_type="user", role="writer", notify=False)
 
 
-def create_and_share_new_spreadsheet(title: str, dest_folder_id: str, client: Client) -> Spreadsheet:
+def create_and_share_new_spreadsheet(
+    title: str, dest_folder_id: str, client: Client
+) -> Spreadsheet:
     """Create a new spreadsheet, share it, and return it"""
     sheet = create_new_spreadsheet(title, dest_folder_id, client)
     share_spreadsheet(sheet)
@@ -130,7 +133,9 @@ def process_sheet(
     title = get_dest_spreadsheet_title(
         spreadsheet, previous_description, translated_data
     )
-    dest_spreadsheet = create_and_share_new_spreadsheet(title, destination_folder_id, client)
+    dest_spreadsheet = create_and_share_new_spreadsheet(
+        title, destination_folder_id, client
+    )
     new_worksheet_data = copy_workout_to_new_spreadsheet(dest_spreadsheet.id, sheet)
     new_worksheet = get_worksheet_from_data(new_worksheet_data, dest_spreadsheet)
     rename_worksheet(new_worksheet, title)
@@ -139,14 +144,18 @@ def process_sheet(
 
 
 @common_retry
-def copy_workout_to_new_spreadsheet(dest_spreadsheet_id: str, sheet: Worksheet) -> dict[str, str]:
+def copy_workout_to_new_spreadsheet(
+    dest_spreadsheet_id: str, sheet: Worksheet
+) -> dict[str, str]:
     """Copy the worksheet to the new spreadsheet and return the new worksheet json data"""
     new_worksheet_data = sheet.copy_to(dest_spreadsheet_id)
     return new_worksheet_data
 
 
 @common_retry
-def get_worksheet_from_data(data: dict[str, str], dest_spreadsheet: Spreadsheet) -> Worksheet:
+def get_worksheet_from_data(
+    data: dict[str, str], dest_spreadsheet: Spreadsheet
+) -> Worksheet:
     """Get the Worksheet object from the json data, then return it"""
     return dest_spreadsheet.get_worksheet_by_id(data["sheetId"])
 
@@ -265,7 +274,9 @@ def create_workout_translation_spreadsheet(
 
 
 @common_retry
-def append_rows_to_sheet(spreadsheet: Spreadsheet, current_client_files: list[Spreadsheet]) -> Worksheet:
+def append_rows_to_sheet(
+    spreadsheet: Spreadsheet, current_client_files: list[Spreadsheet]
+) -> Worksheet:
     """Append rows to the given worksheet"""
     sheet = spreadsheet.sheet1
 
@@ -334,9 +345,7 @@ def main() -> None:
 
     spreadsheets_to_copy = fetch_list_of_files_in_folder(source_folder_id, client)
 
-    translation_sheet = open_spreadsheet_by_key(
-        translation_sheet_id, client
-    ).sheet1
+    translation_sheet = open_spreadsheet_by_key(translation_sheet_id, client).sheet1
 
     translation_data = get_translation_data(translation_sheet)
 

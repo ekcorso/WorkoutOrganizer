@@ -354,6 +354,7 @@ def main() -> None:
         create_workout_translation_spreadsheet(
             destination_folder_id, client, spreadsheets_to_copy
         )
+        exit()
 
     for spreadsheet in track(spreadsheets_to_copy, "Copying..."):
         spreadsheet = open_spreadsheet_by_key(spreadsheet["id"], client)

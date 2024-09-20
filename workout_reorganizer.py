@@ -235,6 +235,10 @@ def get_dest_spreadsheet_title(
     source_title = spreadsheet.title
     translated_source_title = translate_workout_name(source_title, translated_data)
     new_spreadsheet_name = previous_description + " - " + translated_source_title
+
+    if len(new_spreadsheet_name) > 179:
+        new_spreadsheet_name = new_spreadsheet_name[:179]
+
     return new_spreadsheet_name.title()
 
 

@@ -347,7 +347,19 @@ def main() -> None:
 
     translation_sheet = open_spreadsheet_by_key(translation_sheet_id, client).sheet1
 
-    translation_data = get_translation_data(translation_sheet)
+    try:
+        client = get_client()
+        spreadsheets_to_copy = fetch_list_of_files_in_folder(source_folder_id, client)
+    except Exception as e:
+        print(f"An error occured during setup: {e}")
+        exit()
+
+    try:
+        translation_sheet = open_spreadsheet_by_key(translation_sheet_id, client).sheet1
+        translation_data = get_translation_data(translation_sheet)
+    except Exception as e:
+        print(f"An error occured while setting up the translation sheet: {e}")
+        exit()
 
     needs_client_list = input("Do you want to create the client list? (y/n) ")
     if needs_client_list.lower() == "y":

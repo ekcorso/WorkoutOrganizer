@@ -369,7 +369,11 @@ def main() -> None:
         exit()
 
     for spreadsheet in track(spreadsheets_to_copy, "Copying..."):
-        spreadsheet = open_spreadsheet_by_key(spreadsheet["id"], client)
+        try:
+            spreadsheet = open_spreadsheet_by_key(spreadsheet["id"], client)
+        except Exception as e:
+            print(f"An error occured while opening the spreadsheet {spreadsheet.title} : {e}")
+            continue
         if should_process_spreadsheet(spreadsheet, translation_data):
             separate_and_copy_all_sheets_to_folder(
                 spreadsheet, destination_folder_id, client, translation_data

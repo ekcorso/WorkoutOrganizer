@@ -269,7 +269,12 @@ def create_workout_translation_spreadsheet(
         "Workout Translations", dest_folder_id, client
     )  # Create in dest folder so that the client's original folder is never modified
 
-    sheet = append_rows_to_sheet(spreadsheet, current_client_files)
+    try:
+        sheet = append_rows_to_sheet(spreadsheet, current_client_files)
+    except Exception as e:
+        print(f"An error occured while adding rows to the translation sheet: {e}")
+        exit()
+    
     return sheet
 
 

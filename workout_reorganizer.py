@@ -136,11 +136,32 @@ def process_sheet(
     dest_spreadsheet = create_and_share_new_spreadsheet(
         title, destination_folder_id, client
     )
-    new_worksheet_data = copy_workout_to_new_spreadsheet(dest_spreadsheet.id, sheet)
-    new_worksheet = get_worksheet_from_data(new_worksheet_data, dest_spreadsheet)
-    rename_worksheet(new_worksheet, title)
-    delete_client_data(get_canary_cells(sheet), new_worksheet)
-    delete_empty_sheet1(dest_spreadsheet)
+
+    try:
+        new_worksheet_data = copy_workout_to_new_spreadsheet(dest_spreadsheet.id, sheet)
+        new_worksheet = get_worksheet_from_data(new_worksheet_data, dest_spreadsheet)
+    except Exception as e:
+        print(f"An error occured while copying the worksheet {sheet.title} : {e}")
+        return
+
+    try:
+        rename_worksheet(new_worksheet, title)
+        delete_empty_sheet1(dest_spreadsheet)
+    except Exception as e:
+        print(f"An error occured while renaming the worksheet {new_worksheet.title} : {e}")
+        pass
+
+    try:
+        delete_client_data(get_canary_cells(sheet), new_worksheet)
+    except Exception as e:
+        print(f"An error occured while deleting client data from {new_worksheet.title} : {e}")
+        try: # Delete the spreadsheet if we can't delete the client data
+            client.del_spreadsheet(dest_spreadsheet.id)
+        except Exception as delete_error:
+            print(f"An error occured while deleting the spreadsheet {dest_spreadsheet.title} : {delete_error}")
+            print("Please delete the spreadsheet manually.")
+            return
+        return
 
 
 @common_retry

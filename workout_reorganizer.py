@@ -78,8 +78,18 @@ def create_and_share_new_spreadsheet(
     title: str, dest_folder_id: str, client: Client
 ) -> Spreadsheet:
     """Create a new spreadsheet, share it, and return it"""
-    sheet = create_new_spreadsheet(title, dest_folder_id, client)
-    share_spreadsheet(sheet)
+    try:
+        sheet = create_new_spreadsheet(title, dest_folder_id, client)
+    except Exception as e:
+        print(f"An error occured while creating the spreadsheet: {e}")
+        return
+
+    try:
+        share_spreadsheet(sheet)
+    except gspread.exceptions.APIError:
+        print("The spreadsheet is already shared. Continuing...")
+        pass
+
     return sheet
 
 

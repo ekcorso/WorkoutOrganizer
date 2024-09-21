@@ -106,7 +106,11 @@ def separate_and_copy_all_sheets_to_folder(
         futures = []
 
         for sheet in sheets:
-            canary_cells = get_canary_cells(sheet)
+            try:
+                canary_cells = get_canary_cells(sheet)
+            except Exception as e:
+                print(f"An error occured while getting canary cells for {sheet.title} : {e}")
+                continue
             previous_description = get_workout_description(canary_cells)
             if is_valid_workout(canary_cells, previous_description):
                 futures.append(
@@ -118,6 +122,7 @@ def separate_and_copy_all_sheets_to_folder(
                         client,
                         previous_description,
                         translated_data,
+                        canary_cells,
                     )
                 )
 
@@ -138,6 +143,7 @@ def process_sheet(
     client: Client,
     previous_description: str,
     translated_data: list[SpreadsheetRow],
+    canary_cells: list[list[list[str]]],
 ) -> None:
     """Process a single sheet and copy it to a new spreadsheet in the destination folder"""
     title = get_dest_spreadsheet_title(
@@ -162,7 +168,7 @@ def process_sheet(
         pass
 
     try:
-        delete_client_data(get_canary_cells(sheet), new_worksheet)
+        delete_client_data(canary_cells, new_worksheet)
     except Exception as e:
         print(f"An error occured while deleting client data from {new_worksheet.title} : {e}")
         try: # Delete the spreadsheet if we can't delete the client data

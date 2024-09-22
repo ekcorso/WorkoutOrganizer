@@ -109,7 +109,9 @@ def separate_and_copy_all_sheets_to_folder(
             try:
                 canary_cells = get_canary_cells(sheet)
             except Exception as e:
-                print(f"An error occured while getting canary cells for {sheet.title} : {e}")
+                print(
+                    f"An error occured while getting canary cells for {sheet.title} : {e}"
+                )
                 continue
             previous_description = get_workout_description(canary_cells)
             if is_valid_workout(canary_cells, previous_description):
@@ -164,17 +166,23 @@ def process_sheet(
         rename_worksheet(new_worksheet, title)
         delete_empty_sheet1(dest_spreadsheet)
     except Exception as e:
-        print(f"An error occured while renaming the worksheet {new_worksheet.title} : {e}")
+        print(
+            f"An error occured while renaming the worksheet {new_worksheet.title} : {e}"
+        )
         pass
 
     try:
         delete_client_data(canary_cells, new_worksheet)
     except Exception as e:
-        print(f"An error occured while deleting client data from {new_worksheet.title} : {e}")
-        try: # Delete the spreadsheet if we can't delete the client data
+        print(
+            f"An error occured while deleting client data from {new_worksheet.title} : {e}"
+        )
+        try:  # Delete the spreadsheet if we can't delete the client data
             client.del_spreadsheet(dest_spreadsheet.id)
         except Exception as delete_error:
-            print(f"An error occured while deleting the spreadsheet {dest_spreadsheet.title} : {delete_error}")
+            print(
+                f"An error occured while deleting the spreadsheet {dest_spreadsheet.title} : {delete_error}"
+            )
             print("Please delete the spreadsheet manually.")
             return
         return
@@ -315,7 +323,7 @@ def create_workout_translation_spreadsheet(
     except Exception as e:
         print(f"An error occured while adding rows to the translation sheet: {e}")
         exit()
-    
+
     return sheet
 
 
@@ -418,7 +426,9 @@ def main() -> None:
         try:
             spreadsheet = open_spreadsheet_by_key(spreadsheet["id"], client)
         except Exception as e:
-            print(f"An error occured while opening the spreadsheet {spreadsheet.title} : {e}")
+            print(
+                f"An error occured while opening the spreadsheet {spreadsheet.title} : {e}"
+            )
             continue
         if should_process_spreadsheet(spreadsheet, translation_data):
             separate_and_copy_all_sheets_to_folder(

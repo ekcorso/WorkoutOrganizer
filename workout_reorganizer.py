@@ -149,7 +149,7 @@ def process_sheet(
 ) -> None:
     """Process a single sheet and copy it to a new spreadsheet in the destination folder"""
     title = get_dest_spreadsheet_title(
-        spreadsheet, previous_description, translated_data
+        spreadsheet, sheet, previous_description, translated_data
     )
     dest_spreadsheet = create_and_share_new_spreadsheet(
         title, destination_folder_id, client
@@ -273,16 +273,20 @@ def flatten_3d_list(data: list[list[list[str]]]) -> list[str]:
 
 def get_dest_spreadsheet_title(
     spreadsheet: Spreadsheet,
+    sheet: Worksheet,
     previous_description: str,
     translated_data: list[SpreadsheetRow],
 ) -> str:
     """Create and return a title for the new spreadsheet"""
     source_title = spreadsheet.title
     translated_source_title = translate_workout_name(source_title, translated_data)
+    count = sheet.index + 1
     new_spreadsheet_name = previous_description + " - " + translated_source_title
 
-    if len(new_spreadsheet_name) > 179:
-        new_spreadsheet_name = new_spreadsheet_name[:179]
+    if len(new_spreadsheet_name) > 175:
+        new_spreadsheet_name = new_spreadsheet_name[:175]
+
+    new_spreadsheet_name = f"{new_spreadsheet_name} {count}"
 
     return new_spreadsheet_name.title()
 

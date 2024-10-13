@@ -460,8 +460,9 @@ def main() -> None:
         try:
             spreadsheet = open_spreadsheet_by_key(spreadsheet["id"], client)
         except Exception as e:
+            spreadsheet_title = spreadsheet["title"]
             print(
-                f"An error occured while opening the spreadsheet {spreadsheet.title} : {e}"
+                f"An error occured while opening the spreadsheet {spreadsheet_title} : {e}"
             )
             continue
         if should_process_spreadsheet(spreadsheet, translation_data):

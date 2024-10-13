@@ -103,11 +103,7 @@ def separate_and_copy_all_sheets_to_folder(
     try:
         sheets = get_worksheets_in_spreadsheet(spreadsheet)
     except Exception as e:
-        try:
-            spreadsheet_title = get_spreadsheet_title(spreadsheet)
-        except Exception as e2:
-            print(f"An error occured while getting the title of the spreadsheet: {e2}")
-            spreadsheet_title = "Unnamed"
+        spreadsheet_title = spreadsheet["name"]
         print(f"An error occured while getting worksheets for {spreadsheet_title} : {e}")
         return  
 
@@ -141,7 +137,6 @@ def separate_and_copy_all_sheets_to_folder(
             future.result()
 
 
-@common_retry
 def get_canary_cells(sheet: Worksheet) -> list[list[list[str]]]:
     """Get the values of the canary cells from the sheet"""
     return sheet.batch_get(["A1", "B1", "B2", "B3", "B4"])
@@ -230,22 +225,13 @@ def should_process_spreadsheet(
     spreadsheet: Spreadsheet, translations: list[SpreadsheetRow]
 ) -> bool:
     """Check if translation sheet indicates that the workout should be skipped"""
-    try:
-        spreadsheet_title  = get_spreadsheet_title(spreadsheet)
-    except Exception as e:
-        print(f"An error occured while getting the title of the spreadsheet: {e}")
-        return False
+    spreadsheet_title = spreadsheet["name"]
 
     for translation in translations:
         if translation.original_name == spreadsheet_title:
             return not translation.skip
     return False  # If no translation is found, skip the workout
 
-
-@common_retry
-def get_spreadsheet_title(spreadsheet: Spreadsheet) -> str:
-    """Get the title of the spreadsheet"""
-    return spreadsheet.title
 
 def is_valid_workout(
     canary_cells: list[list[list[str]]], previous_description: str
@@ -298,12 +284,7 @@ def get_dest_spreadsheet_title(
     translated_data: list[SpreadsheetRow],
 ) -> str:
     """Create and return a title for the new spreadsheet"""
-    try:
-        source_title = get_spreadsheet_title(spreadsheet)
-    except Exception as e:
-        print(f"An error occured while getting the title of the spreadsheet: {e}")
-        return "Unnamed"
-
+    source_title = spreadsheet["name"]
     translated_source_title = translate_workout_name(source_title, translated_data)
     count = sheet.index + 1
     new_spreadsheet_name = previous_description + " - " + translated_source_title
@@ -460,7 +441,7 @@ def main() -> None:
         try:
             spreadsheet = open_spreadsheet_by_key(spreadsheet["id"], client)
         except Exception as e:
-            spreadsheet_title = spreadsheet["title"]
+            spreadsheet_title = spreadsheet["name"]
             print(
                 f"An error occured while opening the spreadsheet {spreadsheet_title} : {e}"
             )

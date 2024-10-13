@@ -100,7 +100,11 @@ def separate_and_copy_all_sheets_to_folder(
     translated_data: list[SpreadsheetRow],
 ) -> None:
     """Copy all the sheets for spreadsheet and make each into a new spreadsheet in parallel"""
-    sheets = spreadsheet.worksheets()
+    try:
+        sheets = get_worksheets_in_spreadsheet(spreadsheet)
+    except Exception as e:
+        print(f"An error occured while getting worksheets for {spreadsheet.title} : {e}")
+        return  
 
     with ThreadPoolExecutor(max_workers=5) as executor:
         futures = []
@@ -393,6 +397,11 @@ def get_client() -> Client:
     """Get the client object"""
     return gspread.service_account()
 
+
+@common_retry
+def get_worksheets_in_spreadsheet(spreadsheet: Spreadsheet) -> list[Worksheet]:
+    """Get the worksheets for the given spreadsheet"""
+    return spreadsheet.worksheets()
 
 def main() -> None:
     print("Hint: folder IDs are in the URL of the folder in Google Drive.")

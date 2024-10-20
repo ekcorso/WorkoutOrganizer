@@ -381,10 +381,23 @@ def get_value_at_location(canary_cells: list[list[list[str]]], location: int) ->
 @common_retry
 def get_translation_data(sheet: Worksheet) -> list[SpreadsheetRow]:
     """Get the translation data from the given worksheet"""
+    all_records = []
+    try:
+        all_records = get_all_records_for_sheet(sheet)
+    except Exception as e:
+        print(f"An error occured while getting the translation data: {e}")
+        exit()
+
     return [
         SpreadsheetRow(row["Original Name"], row["Description"], row["Skip?"])
-        for row in sheet.get_all_records()
+        for row in get_all_records_for_sheet(sheet)
     ]
+
+
+@common_retry
+def get_all_records_for_sheet(sheet: Worksheet) -> list[dict[str, str]]:
+    """Get all the records for the given sheet"""
+    return sheet.get_all_records()
 
 
 @common_retry

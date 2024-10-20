@@ -103,8 +103,7 @@ def separate_and_copy_all_sheets_to_folder(
     try:
         sheets = get_worksheets_in_spreadsheet(spreadsheet)
     except Exception as e:
-        spreadsheet_title = spreadsheet["name"]
-        print(f"An error occured while getting worksheets for {spreadsheet_title} : {e}")
+        print(f"An error occured while getting worksheets in spreadsheet {spreadsheet.title}: {e}")
         return  
 
     with ThreadPoolExecutor(max_workers=5) as executor:
@@ -225,7 +224,7 @@ def should_process_spreadsheet(
     spreadsheet: Spreadsheet, translations: list[SpreadsheetRow]
 ) -> bool:
     """Check if translation sheet indicates that the workout should be skipped"""
-    spreadsheet_title = spreadsheet["name"]
+    spreadsheet_title = spreadsheet.title
 
     for translation in translations:
         if translation.original_name == spreadsheet_title:
@@ -284,7 +283,7 @@ def get_dest_spreadsheet_title(
     translated_data: list[SpreadsheetRow],
 ) -> str:
     """Create and return a title for the new spreadsheet"""
-    source_title = spreadsheet["name"]
+    source_title = spreadsheet.title
     translated_source_title = translate_workout_name(source_title, translated_data)
     count = sheet.index + 1
     new_spreadsheet_name = previous_description + " - " + translated_source_title
@@ -316,7 +315,7 @@ def get_client_name_list_from_spreadsheets(
     spreadsheets: list[Spreadsheet],
 ) -> list[list[str]]:
     """Return a list of titles for the given list of spreadsheets"""
-    return [[sheet["name"]] for sheet in spreadsheets]
+    return [[sheet.title] for sheet in spreadsheets]
 
 
 def create_workout_translation_spreadsheet(

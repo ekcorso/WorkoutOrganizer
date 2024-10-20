@@ -438,16 +438,16 @@ def main() -> None:
 
     for spreadsheet in track(spreadsheets_to_copy, "Copying..."):
         try:
-            spreadsheet = open_spreadsheet_by_key(spreadsheet["id"], client)
+            open_spreadsheet = open_spreadsheet_by_key(spreadsheet["id"], client)
         except Exception as e:
             spreadsheet_title = spreadsheet["name"]
             print(
                 f"An error occured while opening the spreadsheet {spreadsheet_title} : {e}"
             )
             continue
-        if should_process_spreadsheet(spreadsheet, translation_data):
+        if should_process_spreadsheet(open_spreadsheet, translation_data):
             separate_and_copy_all_sheets_to_folder(
-                spreadsheet, destination_folder_id, client, translation_data
+                open_spreadsheet, destination_folder_id, client, translation_data
             )
 
 

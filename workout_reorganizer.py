@@ -86,7 +86,8 @@ def create_and_share_new_spreadsheet(
 
     try:
         share_spreadsheet(sheet)
-    except gspread.exceptions.APIError:
+    except gspread.exceptions.APIError:  
+        # This could be an issue if other errors are thrown
         print("The spreadsheet is already shared. Continuing...")
         pass
 
@@ -103,8 +104,10 @@ def separate_and_copy_all_sheets_to_folder(
     try:
         sheets = get_worksheets_in_spreadsheet(spreadsheet)
     except Exception as e:
-        print(f"An error occured while getting worksheets in spreadsheet {spreadsheet.title}: {e}")
-        return  
+        print(
+            f"An error occured while getting worksheets in spreadsheet {spreadsheet.title}: {e}"
+        )
+        return
 
     with ThreadPoolExecutor(max_workers=5) as executor:
         futures = []

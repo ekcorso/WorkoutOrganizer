@@ -17,32 +17,14 @@ from gspread import Worksheet
 
 from rich.progress import track
 
+from spreadsheet import SpreadsheetRow
+
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 common_retry = retry(
     stop=stop_after_attempt(5),
     wait=wait_exponential(multiplier=1, min=1, max=60),
 )
-
-
-class SpreadsheetRow:
-    original_name: str
-    description: str
-    skip: bool
-
-    def __init__(self, original_name: str, description: str, skip: str) -> None:
-        self.original_name = original_name
-        self.description = description
-        self.skip = self.should_skip(skip)
-
-    def __repr__(self) -> str:
-        return f"SpreadsheetRow({self.original_name}, {self.description}, {self.skip})"
-
-    def should_skip(self, skip: str) -> bool:
-        if skip:
-            if skip.lower() == "y":
-                return True
-        return False
 
 
 @common_retry

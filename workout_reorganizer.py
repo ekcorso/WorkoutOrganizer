@@ -17,9 +17,9 @@ from gspread import Worksheet
 
 from rich.progress import track
 
-from spreadsheet import SpreadsheetRow
-
 from tenacity import retry, stop_after_attempt, wait_exponential
+
+from spreadsheet import SpreadsheetRow
 
 common_retry = retry(
     stop=stop_after_attempt(5),
@@ -68,7 +68,7 @@ def create_and_share_new_spreadsheet(
 
     try:
         share_spreadsheet(sheet)
-    except gspread.exceptions.APIError:  
+    except gspread.exceptions.APIError:
         # This could be an issue if other errors are thrown
         print("The spreadsheet is already shared. Continuing...")
         pass
